@@ -190,7 +190,11 @@ export async function sameOrigin(): Promise<boolean> {
   if (!origin) return h.get("sec-fetch-site") === "same-origin" || h.get("sec-fetch-site") === null;
   const host = h.get("x-forwarded-host") ?? h.get("host");
   try {
-    return new URL(origin).host === host;
+    const originHost = new URL(origin).host;
+    if (originHost === host) return true;
+    // Behind the Vercel /api proxy the forwarded host can be lost; the browser
+    // Origin must still be exactly the configured public site.
+    return config.isProd && originHost === new URL(config.publicUrl).host;
   } catch {
     return false;
   }

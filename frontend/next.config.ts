@@ -66,6 +66,15 @@ const nextConfig: NextConfig = {
       { source: "/book-demo", destination: "/demo", permanent: false },
     ];
   },
+  // Split deployment: the UI is hosted on Vercel and the backend (API routes,
+  // database, worker) on Railway. Set API_ORIGIN on the Vercel project only;
+  // /api/* is then proxied to Railway so the browser stays same-origin (cookies
+  // and CSRF checks keep working). Unset on Railway, where the API is local.
+  async rewrites() {
+    const apiOrigin = process.env.API_ORIGIN?.trim().replace(/\/+$/, "");
+    if (!apiOrigin) return [];
+    return { beforeFiles: [{ source: "/api/:path*", destination: `${apiOrigin}/api/:path*` }], afterFiles: [], fallback: [] };
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
