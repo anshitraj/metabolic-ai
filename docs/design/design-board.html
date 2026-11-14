@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metabolic Design Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F4EE;--paper-sunken:#ECEBE3;--surface:#FFFFFF;--ink:#0E1410;--ink-2:#3D463F;--muted:#6E776F;--line:#E1E0D7;--line-strong:#CBCAC0;
+  --g-900:#06301F;--g-700:#0A6B44;--g-500:#12B36E;--g-400:#2BD98A;--g-200:#A9F0CC;--g-50:#E6F6EC;
+  --stage:#070B09;--stage-2:#0D1410;--stage-line:rgba(232,241,235,.08);--stage-ink:#E8F1EB;--stage-muted:#8C9A90;
+  --ab:#2BD98A;--df:#F2A93B;--sv:#F0525E;--rc:#6C8CFF;
+  --ab-t:#0A6B44;--df-t:#8A5A0B;--sv-t:#A8232F;--rc-t:#3247B8;
+  --ab-b:#E6F6EC;--df-b:#FBF0DC;--sv-b:#FBE5E7;--rc-b:#E7ECFF;
+  --sim:#7A5AF8;
+  --serif:"Newsreader",Georgia,serif;--sans:"Geist",ui-sans-serif,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font:15px/24px var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+section.board{padding:72px 0;border-bottom:1px solid var(--line)}
+.label{font:600 11px/16px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--g-700)}
+h1.d{font:400 72px/72px var(--serif);letter-spacing:-.02em}
+h2.d{font:400 40px/46px var(--serif);letter-spacing:-.01em;margin:8px 0 12px}
+.lead{font-size:18px;line-height:30px;color:var(--ink-2);max-width:560px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;font:600 14px var(--sans);border:1px solid transparent;cursor:pointer;text-decoration:none}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-green{background:var(--g-700);color:#fff}
+.btn-sec{background:var(--paper-sunken);color:var(--ink);border-color:var(--line)}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font:600 11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.c-ab{color:var(--ab-t);background:var(--ab-b)}.c-df{color:var(--df-t);background:var(--df-b)}.c-sv{color:var(--sv-t);background:var(--sv-b)}.c-rc{color:var(--rc-t);background:var(--rc-b)}
+.c-sim{color:var(--sim);background:#F0ECFF;border:1px dashed var(--sim)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+/* top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;font:600 18px var(--sans)}
+.logo svg{display:block}
+.navlinks{display:flex;gap:32px;font-size:14px;color:var(--ink-2)}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:40px 0 56px}
+.hero h1{margin:16px 0 20px}
+.hero .ctas{display:flex;gap:10px;margin:28px 0 14px}
+.fine{font-size:13px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding-top:28px}
+.stats>div{text-align:center;border-right:1px solid var(--line)}.stats>div:last-child{border:0}
+.stats .v{font:400 34px/40px var(--serif)}.stats .k{font-size:13px;color:var(--muted)}
+/* stage */
+.stage{position:relative;background:radial-gradient(120% 90% at 50% 40%,#0F1B14 0%,var(--stage) 60%);border-radius:28px;overflow:hidden;color:var(--stage-ink);aspect-ratio:1/1.05}
+.stage::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");pointer-events:none}
+.stage .overlay{position:absolute;left:20px;right:20px;bottom:18px;display:flex;justify-content:space-between;align-items:center;font:12px var(--mono);color:var(--stage-muted)}
+.stage .tag{position:absolute;top:18px;left:20px}
+.org{position:absolute;inset:0;display:grid;place-items:center}
+.org svg{width:88%;height:88%}
+.breath{transform-origin:50% 50%;animation:breath 4s ease-in-out infinite}
+@keyframes breath{50%{transform:scale(1.035)}}
+.spin1{transform-origin:50% 50%;animation:spin 26s linear infinite}
+.spin2{transform-origin:50% 50%;animation:spin 40s linear infinite reverse}
+.spin3{transform-origin:50% 50%;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flow{stroke-dasharray:3 14;animation:flow 2.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-34}}
+.beat{transform-origin:50% 50%;animation:beat 1.6s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.08)}24%{transform:scale(1)}36%{transform:scale(1.05)}}
+/* swatches */
+.grid{display:grid;gap:16px}
+.sw{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.sw .c{height:84px}.sw .m{padding:10px 12px;font-size:12px;line-height:18px}.sw .m b{display:block;font:600 13px var(--sans)}
+.typerow{display:grid;grid-template-columns:160px 1fr;gap:24px;padding:18px 0;border-top:1px solid var(--line);align-items:baseline}
+/* states */
+.states{grid-template-columns:repeat(4,1fr)}
+.stile{background:var(--stage);border-radius:20px;overflow:hidden;color:var(--stage-ink)}
+.stile .s{aspect-ratio:1/0.85;display:grid;place-items:center;position:relative}
+.stile .t{padding:16px 18px 20px;background:var(--stage-2);border-top:1px solid var(--stage-line)}
+.stile h4{font:500 16px var(--sans);margin-bottom:4px}.stile p{font-size:13px;line-height:20px;color:var(--stage-muted)}
+/* dashboard mock */
+.app{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper)}
+.side{background:var(--paper-sunken);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.side a{padding:8px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none;display:flex;gap:10px;align-items:center}
+.side a.on{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.side .sep{height:1px;background:var(--line);margin:10px 4px}
+.main{padding:0}
+.tb{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--line);background:var(--paper)}
+.tb .l,.tb .r{display:flex;gap:12px;align-items:center;font-size:13px}
+.pill{height:26px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border:1px solid var(--line);border-radius:999px;font:500 12px var(--sans);background:var(--surface)}
+.content{padding:20px}
+.metrics{display:grid;grid-template-columns:repeat(6,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.metrics>div{padding:14px 16px;border-right:1px solid var(--line)}.metrics>div:last-child{border:0}
+.metrics .k{font:600 10px/14px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.metrics .v{font:500 22px/30px var(--mono);margin-top:4px}
+.metrics .d{font:12px var(--mono);color:var(--muted)}
+.row2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}
+.intel{padding:18px}
+.intel dl{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;font-size:13px}
+.intel dt{color:var(--muted)}.intel dd{text-align:right}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+.panel{padding:16px}.panel h5{font:600 13px var(--sans);margin-bottom:10px;display:flex;justify-content:space-between}
+.feed li{list-style:none;padding:10px 0;border-top:1px solid var(--line);font-size:13px;line-height:19px}
+.feed li:first-child{border:0}
+.rc{background:var(--stage);color:var(--stage-ink);border-radius:12px;padding:14px;margin-bottom:10px;font-size:12px}
+.rc .h{font:12px var(--mono);color:var(--g-200)}
+/* margin card */
+.margin{padding:28px;background:var(--surface);border-radius:20px;border:1px solid var(--line)}
+.bar{display:grid;grid-template-columns:110px 1fr 70px 30px;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
+.bar i{display:block;height:10px;border-radius:5px}
+input[type=range]{width:100%;accent-color:var(--g-700)}
+.callout{margin-top:18px;padding:14px 16px;border-radius:10px;background:var(--ink);color:#fff;font-size:14px}
+.callout b{color:var(--g-400)}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+@media (max-width:900px){
+  .hero,.row2,.mg{grid-template-columns:1fr!important}.states{grid-template-columns:1fr 1fr}.row3{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(3,1fr)}.metrics>div:nth-child(3){border-right:0}.metrics>div:nth-child(-n+3){border-bottom:1px solid var(--line)}
+  .app{grid-template-columns:1fr}.side{display:none}h1.d{font-size:48px;line-height:50px}.navlinks{display:none}
+  .stats{grid-template-columns:1fr 1fr;row-gap:20px}.stats>div:nth-child(2){border:0}
+}
+@media (max-width:560px){.wrap{padding:0 16px}h1.d{font-size:40px;line-height:44px}.states{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.tb .r .pill:not(:last-child){display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ ORGANISM SYMBOL (2D stand-in for the 3D scene) ============ -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="coreAb" cx="45%" cy="40%"><stop offset="0" stop-color="#C9FFE5"/><stop offset=".35" stop-color="#2BD98A"/><stop offset="1" stop-color="#0A3B26" stop-opacity="0"/></radialGradient>
+    <radialGradient id="coreDf" cx="45%" cy="40%"><stop offset="0" stop-color="#FFE7BE"/><stop offset=".35" stop-color="#F2A93B"/><stop offset="1" stop-color="#3B2608" stop-opacity="0"/></radialGradient>
+    <radialGradient id="coreSv" cx="45%" cy="40%"><stop offset="0" stop-color="#FFC9CE"/><stop offset=".35" stop-color="#F0525E"/><stop offset="1" stop-color="#3B0A10" stop-opacity="0"/></radialGradient>
+    <radialGradient id="coreRc" cx="45%" cy="40%"><stop offset="0" stop-color="#DDE5FF"/><stop offset=".35" stop-color="#6C8CFF"/><stop offset="1" stop-color="#101B3B" stop-opacity="0"/></radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="topnav">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.5" fill="none" stroke="#0E1410" stroke-width="1.5"/><circle cx="14" cy="14" r="5.5" fill="#12B36E"/><path d="M14 1.5a12.5 12.5 0 0 1 0 25" fill="none" stroke="#12B36E" stroke-width="1.5"/></svg>
+      Metabolic AI
+    </div>
+    <nav class="navlinks"><span>How it works</span><span>Stress Lab</span><span>Docs</span><span>Verify</span></nav>
+    <a class="btn btn-ink" href="#app">Launch app →</a>
+  </header>
+</div>
+
+<!-- ============ 1. LANDING HERO ============ -->
+<section class="board" style="padding-top:8px">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="label"><span class="dot" style="display:inline-block;background:var(--g-500);margin-right:8px;vertical-align:1px"></span>Live on NEAR testnet</span>
+        <h1 class="d">An AI that pays<br>to stay alive.</h1>
+        <p class="lead">It earns from every request, pays for its own models, and changes how it thinks when money gets tight. Every decision is logged, explained, and committed on chain.</p>
+        <div class="ctas"><a class="btn btn-green" href="#app">Launch app →</a><a class="btn btn-sec" href="#states">Watch it adapt</a></div>
+        <p class="fine">Real NEAR deposits · Real inference · Simulations clearly labelled</p>
+      </div>
+      <div class="stage" role="img" aria-label="Organism in abundance state">
+        <span class="tag chip c-ab" style="background:rgba(43,217,138,.12);color:var(--g-400)"><span class="dot"></span>Abundance</span>
+        <div class="org">
+          <svg viewBox="0 0 400 400">
+            <g class="spin3" opacity=".35"><circle cx="200" cy="200" r="182" fill="none" stroke="#2BD98A" stroke-width=".8" stroke-dasharray="2 6"/></g>
+            <g class="spin2"><ellipse cx="200" cy="200" rx="160" ry="58" fill="none" stroke="#A9F0CC" stroke-opacity=".35" stroke-width="1"/><circle cx="360" cy="200" r="5" fill="#E8F1EB"/></g>
+            <g class="spin1"><ellipse cx="200" cy="200" rx="120" ry="120" transform="rotate(-25 200 200)" fill="none" stroke="#2BD98A" stroke-opacity=".5" stroke-width="1.2"/><circle cx="200" cy="80" r="6" fill="#2BD98A"/></g>
+            <g stroke="#2BD98A" stroke-opacity=".55" fill="none" stroke-width="1">
+              <path class="flow" d="M200 200 C 140 150, 90 160, 50 110"/><path class="flow" d="M200 200 C 260 140, 310 150, 350 90"/>
+              <path class="flow" d="M200 200 C 150 260, 110 270, 70 320"/><path class="flow" d="M200 200 C 270 250, 300 300, 340 330"/>
+              <path class="flow" d="M200 200 C 200 120, 230 80, 210 30"/><path class="flow" d="M200 200 C 190 280, 170 320, 190 375"/>
+            </g>
+            <g class="breath"><circle cx="200" cy="200" r="92" fill="url(#coreAb)" filter="url(#glow)" opacity=".7"/><circle cx="200" cy="200" r="64" fill="url(#coreAb)"/></g>
+          </svg>
+        </div>
+        <div class="overlay"><span>margin 41% · 4.1× reserve</span><span>12 req/min</span></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div><div class="v mono" style="font-family:var(--serif)">—</div><div class="k">Treasury (live)</div></div>
+      <div><div class="v" style="font-family:var(--serif)">—</div><div class="k">Requests served</div></div>
+      <div><div class="v" style="font-family:var(--serif)">—</div><div class="k">Average margin</div></div>
+      <div><div class="v" style="font-family:var(--serif)">—</div><div class="k">Receipts on chain</div></div>
+    </div>
+    <p class="note">Stats render real values from a public summary endpoint, and "—" until it answers. The organism values above are illustrative on this board.</p>
+  </div>
+</section>
+
+<!-- ============ 2. COLOUR ============ -->
+<section class="board">
+  <div class="wrap">
+    <span class="label">Design system</span>
+    <h2 class="d">Paper for information. Stage for life.</h2>
+    <p class="lead" style="margin-bottom:28px">Warm off-white and ink for reading and deciding. A deep green-black stage where the organism lives. One green carries the brand; glow appears only on the stage.</p>
+    <div class="grid" style="grid-template-columns:repeat(6,1fr)">
+      <div class="sw"><div class="c" style="background:#F5F4EE"></div><div class="m"><b>Paper</b><span class="mono">#F5F4EE</span></div></div>
+      <div class="sw"><div class="c" style="background:#ECEBE3"></div><div class="m"><b>Sunken</b><span class="mono">#ECEBE3</span></div></div>
+      <div class="sw"><div class="c" style="background:#FFFFFF"></div><div class="m"><b>Surface</b><span class="mono">#FFFFFF</span></div></div>
+      <div class="sw"><div class="c" style="background:#0E1410"></div><div class="m"><b>Ink</b><span class="mono">#0E1410</span></div></div>
+      <div class="sw"><div class="c" style="background:#070B09"></div><div class="m"><b>Stage</b><span class="mono">#070B09</span></div></div>
+      <div class="sw"><div class="c" style="background:#0D1410"></div><div class="m"><b>Stage 2</b><span class="mono">#0D1410</span></div></div>
+      <div class="sw"><div class="c" style="background:#06301F"></div><div class="m"><b>Green 900</b><span class="mono">#06301F</span></div></div>
+      <div class="sw"><div class="c" style="background:#0A6B44"></div><div class="m"><b>Green 700</b><span class="mono">#0A6B44</span> · text, buttons</div></div>
+      <div class="sw"><div class="c" style="background:#12B36E"></div><div class="m"><b>Green 500</b><span class="mono">#12B36E</span> · icons, focus</div></div>
+      <div class="sw"><div class="c" style="background:#2BD98A"></div><div class="m"><b>Green 400</b><span class="mono">#2BD98A</span> · stage accent</div></div>
+      <div class="sw"><div class="c" style="background:#A9F0CC"></div><div class="m"><b>Green 200</b><span class="mono">#A9F0CC</span></div></div>
+      <div class="sw"><div class="c" style="background:#E6F6EC"></div><div class="m"><b>Green 50</b><span class="mono">#E6F6EC</span></div></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;align-items:center">
+      <span class="chip c-ab"><span class="dot"></span>Abundance</span>
+      <span class="chip c-df"><span class="dot"></span>Defensive</span>
+      <span class="chip c-sv"><span class="dot"></span>Survival</span>
+      <span class="chip c-rc"><span class="dot"></span>Recovery</span>
+      <span class="chip c-sim">Simulated</span>
+      <span class="muted" style="font-size:13px;margin-left:6px">State chips always pair colour with a word. Violet is reserved for simulated data.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. TYPE ============ -->
+<section class="board">
+  <div class="wrap">
+    <span class="label">Typography</span>
+    <h2 class="d">Serif to say it. Sans to use it. Mono to count it.</h2>
+    <div style="margin-top:20px">
+      <div class="typerow"><span class="muted mono" style="font-size:12px">Newsreader 72<br>display-xl</span><span style="font:400 64px/68px var(--serif);letter-spacing:-.02em">Intelligence that earns.</span></div>
+      <div class="typerow"><span class="muted mono" style="font-size:12px">Newsreader 36<br>h1</span><span style="font:400 36px/42px var(--serif)">Earn. Spend. Adapt. Survive.</span></div>
+      <div class="typerow"><span class="muted mono" style="font-size:12px">Geist 600 18<br>h3</span><span style="font:600 18px/26px var(--sans)">Switched to Economy. Premium would have run at 12% margin.</span></div>
+      <div class="typerow"><span class="muted mono" style="font-size:12px">Geist 15<br>body</span><span>Customer deposits are credits, not revenue. They become revenue only when a request completes and is billed from actual token usage.</span></div>
+      <div class="typerow"><span class="muted mono" style="font-size:12px">Geist Mono 22<br>metric</span><span class="mono" style="font-size:22px">$48.20 · 14.10 NEAR · 51% · 9f3c…a21e</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. MARGIN CARD (interactive) ============ -->
+<section class="board">
+  <div class="wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="mg">
+      <div class="margin">
+        <span class="label" style="color:var(--muted)">A request of</span>
+        <div style="font:400 44px/52px var(--serif);margin:4px 0 14px"><span id="tok">2,400</span> <span style="font-size:22px" class="muted">tokens</span></div>
+        <input id="sl" type="range" min="200" max="12000" step="100" value="2400" aria-label="Request size in tokens">
+        <div style="display:flex;justify-content:space-between" class="mono muted"><small>200</small><small>12,000</small></div>
+        <div style="margin-top:14px" id="bars"></div>
+        <div class="callout" id="why"></div>
+        <p class="note">Illustrative prices with a 2.4× compute-cost spike, DEFENSIVE floor 30%. Real numbers come from the model price file.</p>
+      </div>
+      <div>
+        <span class="label">Before it thinks</span>
+        <h2 class="d">It does the math first.</h2>
+        <p class="lead">Every candidate model is priced before a single token is generated. The policy engine keeps the best model whose margin clears the floor for the current state.</p>
+        <ul style="margin-top:18px;padding-left:18px;color:var(--ink-2);line-height:30px">
+          <li>Estimated cost shown before you send</li>
+          <li>Actual cost shown after, from provider usage</li>
+          <li>One written reason for every routing choice</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. STATES ============ -->
+<section class="board" id="states">
+  <div class="wrap">
+    <span class="label">Operating states</span>
+    <h2 class="d">Four moods, all earned.</h2>
+    <p class="lead" style="margin-bottom:28px">The organism's shape comes from the policy engine's state. Colour, size, filaments and orbit speed all change together.</p>
+    <div class="grid states">
+      <div class="stile"><div class="s"><svg viewBox="0 0 200 200" width="80%">
+        <g class="spin1"><ellipse cx="100" cy="100" rx="80" ry="30" fill="none" stroke="#2BD98A" stroke-opacity=".45"/></g>
+        <g class="spin2"><circle cx="100" cy="100" r="70" fill="none" stroke="#A9F0CC" stroke-opacity=".25" stroke-dasharray="2 5"/></g>
+        <g stroke="#2BD98A" stroke-opacity=".5" fill="none"><path class="flow" d="M100 100 C70 70 50 70 25 45"/><path class="flow" d="M100 100 C130 70 150 70 175 45"/><path class="flow" d="M100 100 C70 130 50 140 30 170"/><path class="flow" d="M100 100 C130 130 150 140 170 170"/></g>
+        <g class="breath"><circle cx="100" cy="100" r="44" fill="url(#coreAb)" filter="url(#glow)" opacity=".6"/><circle cx="100" cy="100" r="32" fill="url(#coreAb)"/></g></svg></div>
+        <div class="t"><span class="chip c-ab" style="margin-bottom:10px"><span class="dot"></span>Abundance</span><h4>Healthy and generous</h4><p>Margin ≥ 30%, liquidity ≥ 3× reserve. Premium models allowed when they clear margin.</p></div></div>
+
+      <div class="stile"><div class="s"><svg viewBox="0 0 200 200" width="80%">
+        <g class="spin3"><ellipse cx="100" cy="100" rx="66" ry="22" fill="none" stroke="#F2A93B" stroke-opacity=".45"/></g>
+        <g stroke="#F2A93B" stroke-opacity=".45" fill="none"><path class="flow" d="M100 100 C80 80 60 75 45 60" style="animation-duration:4s"/><path class="flow" d="M100 100 C125 125 140 130 155 145" style="animation-duration:4s"/></g>
+        <g class="breath" style="animation-duration:5s"><circle cx="100" cy="100" r="34" fill="url(#coreDf)" filter="url(#glow)" opacity=".5"/><circle cx="100" cy="100" r="26" fill="url(#coreDf)"/></g></svg></div>
+        <div class="t"><span class="chip c-df" style="margin-bottom:10px"><span class="dot"></span>Defensive</span><h4>Tightening up</h4><p>Margin under 20% or reserve thinning. Economy models preferred; costly features off.</p></div></div>
+
+      <div class="stile"><div class="s"><svg viewBox="0 0 200 200" width="80%">
+        <g opacity=".5"><path d="M40 100 A60 22 0 0 1 80 80" fill="none" stroke="#F0525E"/><path d="M130 82 A60 22 0 0 1 160 100" fill="none" stroke="#F0525E"/><path d="M150 112 A60 22 0 0 1 120 121" fill="none" stroke="#F0525E"/></g>
+        <g class="beat"><circle cx="100" cy="100" r="22" fill="url(#coreSv)" filter="url(#glow)" opacity=".45"/><circle cx="100" cy="100" r="16" fill="url(#coreSv)" opacity=".85"/></g></svg></div>
+        <div class="t"><span class="chip c-sv" style="margin-bottom:10px"><span class="dot"></span>Survival</span><h4>Protecting the reserve</h4><p>Liquidity at or below the hard reserve. Unprofitable inference blocked; clear funding message.</p></div></div>
+
+      <div class="stile"><div class="s"><svg viewBox="0 0 200 200" width="80%">
+        <g class="spin2"><ellipse cx="100" cy="100" rx="74" ry="26" fill="none" stroke="#6C8CFF" stroke-opacity=".45" stroke-dasharray="40 10"/></g>
+        <g stroke="#6C8CFF" stroke-opacity=".5" fill="none"><path class="flow" d="M100 100 C80 75 60 70 40 52"/><path class="flow" d="M100 100 C125 75 145 70 165 55"/><path class="flow" d="M100 100 C110 130 115 150 105 175"/></g>
+        <g class="breath"><circle cx="100" cy="100" r="36" fill="url(#coreRc)" filter="url(#glow)" opacity=".55"/><circle cx="100" cy="100" r="25" fill="url(#coreRc)"/></g></svg></div>
+        <div class="t"><span class="chip c-rc" style="margin-bottom:10px"><span class="dot"></span>Recovery</span><h4>Rebuilding carefully</h4><p>Funds back, stability not yet proven. Capacity returns in steps; abundance after 5 stable minutes.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. COMMAND CENTER ============ -->
+<section class="board" id="app">
+  <div class="wrap">
+    <span class="label">Command Center</span>
+    <h2 class="d">The business, at a glance.</h2>
+    <p class="lead" style="margin-bottom:28px">Paper chrome around one dark stage. Numbers come from backend snapshots; the organism animates from live events.</p>
+    <div class="app">
+      <aside class="side" aria-label="Sidebar">
+        <div class="logo" style="padding:4px 10px 16px;font-size:15px"><svg width="22" height="22" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12.5" fill="none" stroke="#0E1410" stroke-width="1.5"/><circle cx="14" cy="14" r="5.5" fill="#12B36E"/></svg>Metabolic</div>
+        <a class="on" href="#app">◉ Overview</a><a href="#app">◌ AI Workspace</a><a href="#app">◌ Treasury</a><a href="#app">◌ Models</a><a href="#app">◌ Decisions</a><a href="#app">◌ Stress Lab</a><a href="#app">◌ Receipts</a><a href="#app">◌ Developers</a>
+        <div class="sep"></div><a href="#app">◌ Settings</a>
+        <div style="margin-top:auto;background:var(--stage);border-radius:12px;padding:14px;display:flex;gap:10px;align-items:center;color:var(--stage-ink);font-size:12px">
+          <svg width="34" height="34" viewBox="0 0 40 40"><g class="breath"><circle cx="20" cy="20" r="14" fill="url(#coreAb)"/></g></svg>
+          <div><b style="font-weight:600">Abundance</b><br><span style="color:var(--stage-muted)">runway 3d 4h</span></div>
+        </div>
+      </aside>
+      <div class="main">
+        <div class="tb">
+          <div class="l"><b style="font-weight:600">Overview</b><span class="muted">since 14:02 · policy v1</span></div>
+          <div class="r"><span class="pill" style="color:var(--g-700)"><span class="dot"></span>Testnet</span><span class="pill">Providers <span style="color:var(--g-500)">●●</span><span style="color:var(--df)">●</span></span><span class="pill">🔔</span><span class="pill mono">alice.testnet ▾</span></div>
+        </div>
+        <div class="content">
+          <div class="metrics">
+            <div><div class="k">Treasury</div><div class="v">$48.20</div><div class="d">14.10 NEAR</div></div>
+            <div><div class="k">Revenue 24h</div><div class="v">$12.31</div><div class="d" style="color:var(--g-700)">+8%</div></div>
+            <div><div class="k">Inference spend</div><div class="v">$6.02</div><div class="d">3 est.</div></div>
+            <div><div class="k">Gross margin</div><div class="v">51%</div><div class="d">rolling 60m</div></div>
+            <div><div class="k">Runway</div><div class="v">3d 4h</div><div class="d">at current burn</div></div>
+            <div><div class="k">State</div><div class="v" style="font-size:15px;margin-top:8px"><span class="chip c-ab"><span class="dot"></span>Abundance</span></div><div class="d" style="margin-top:4px">4.1× reserve</div></div>
+          </div>
+          <div class="row2">
+            <div class="stage" style="aspect-ratio:auto;min-height:380px">
+              <span class="tag mono" style="font-size:11px;color:var(--stage-muted)">LIVE · real scope</span>
+              <div class="org"><svg viewBox="0 0 400 300" style="width:90%;height:90%">
+                <g class="spin2"><ellipse cx="200" cy="150" rx="170" ry="52" fill="none" stroke="#A9F0CC" stroke-opacity=".3"/><circle cx="370" cy="150" r="5" fill="#E8F1EB"/></g>
+                <g class="spin1"><ellipse cx="200" cy="150" rx="110" ry="110" transform="rotate(-20 200 150)" fill="none" stroke="#2BD98A" stroke-opacity=".45"/></g>
+                <g stroke="#2BD98A" stroke-opacity=".5" fill="none"><path class="flow" d="M200 150 C150 110 100 110 60 70"/><path class="flow" d="M200 150 C250 110 300 110 340 70"/><path class="flow" d="M200 150 C150 190 110 210 70 250"/><path class="flow" d="M200 150 C250 190 290 210 330 250"/></g>
+                <g class="breath"><circle cx="200" cy="150" r="70" fill="url(#coreAb)" filter="url(#glow)" opacity=".6"/><circle cx="200" cy="150" r="48" fill="url(#coreAb)"/></g>
+                <g font-family="Geist Mono" font-size="10" fill="#8C9A90"><text x="292" y="98">○ claude-sonnet · premium</text><text x="30" y="178">○ treasury</text></g>
+              </svg></div>
+              <div class="overlay"><span>● Abundance · 12 req/min</span><span>[Reset view] [Effects ◐]</span></div>
+            </div>
+            <div class="card intel">
+              <span class="label" style="color:var(--muted)">Intelligence</span>
+              <dl style="margin-top:14px">
+                <dt>Model</dt><dd class="mono">claude-sonnet-…</dd>
+                <dt>Tier</dt><dd>Premium · <span style="color:var(--g-500)">● ok</span></dd>
+                <dt>Est. request</dt><dd class="mono">$0.0081</dd>
+                <dt>Last margin</dt><dd class="mono">58%</dd>
+                <dt>Providers</dt><dd><span style="color:var(--g-500)">● ●</span> <span style="color:var(--df)">●</span></dd>
+                <dt>Last event</dt><dd class="mono" style="font-size:12px">inference.completed · 2s</dd>
+              </dl>
+              <div style="margin-top:16px;padding:12px;border-radius:10px;background:var(--g-50);color:var(--g-900);font-size:13px;line-height:20px"><b>Why this model:</b> premium margin 58% clears the 30% floor; liquidity 4.1× reserve.</div>
+            </div>
+          </div>
+          <div class="row3">
+            <div class="card panel"><h5>Treasury · 24h <span class="muted mono" style="font-weight:400">USD</span></h5>
+              <svg viewBox="0 0 300 110" width="100%"><defs><linearGradient id="ar" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#12B36E" stop-opacity=".25"/><stop offset="1" stop-color="#12B36E" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 80 L30 76 L60 78 L90 62 L120 64 L150 50 L180 54 L210 40 L240 44 L270 30 L300 26 L300 110 L0 110Z" fill="url(#ar)"/><path d="M0 80 L30 76 L60 78 L90 62 L120 64 L150 50 L180 54 L210 40 L240 44 L270 30 L300 26" fill="none" stroke="#0A6B44" stroke-width="1.6"/>
+                <line x1="0" x2="300" y1="96" y2="96" stroke="#A8232F" stroke-dasharray="3 3" stroke-width="1"/><text x="4" y="92" font-size="9" fill="#A8232F" font-family="Geist Mono">hard reserve</text></svg></div>
+            <div class="card panel"><h5>Decision feed <span class="chip c-ab" style="height:20px;font-size:10px">Live</span></h5>
+              <ul class="feed">
+                <li><b>Routed Premium</b> · margin 58%<br><span class="muted mono" style="font-size:12px">14:31:02 · policy v1</span></li>
+                <li><b>Defensive → Abundance</b> · coverage 3.4× held 300s<br><span class="muted mono" style="font-size:12px">14:02:11</span></li>
+                <li><b>Routed Economy</b> · premium margin 12% &lt; 30%<br><span class="muted mono" style="font-size:12px">13:58:40</span></li>
+              </ul></div>
+            <div class="card panel"><h5>Receipts</h5>
+              <div class="rc"><div style="display:flex;justify-content:space-between"><b>rcpt_0142</b><span style="color:var(--g-400)">● Finalized</span></div><div class="h">9f3c…a21e ↗</div><div style="color:var(--stage-muted);margin-top:4px">13:50–14:00 · margin 49%</div></div>
+              <div class="rc"><div style="display:flex;justify-content:space-between"><b>rcpt_0143</b><span style="color:var(--df)">● Submitted</span></div><div class="h">pending finality…</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="note">Mock values for layout only. In the product every number on this screen comes from the backend snapshot, and simulated values carry a violet SIMULATED chip.</p>
+  </div>
+</section>
+
+<footer class="wrap" style="padding:64px 24px 48px">
+  <div style="font:400 clamp(64px,14vw,180px)/0.9 var(--serif);letter-spacing:-.03em;color:var(--ink)">Metabolic</div>
+  <p class="muted" style="margin-top:16px">Design board v0 · 2026-11-14 · see docs/05-DESIGN-SYSTEM.md and docs/06-SCREENS-AND-STRUCTURE.md</p>
+</footer>
+
+<script>
+(function(){
+  var sl=document.getElementById('sl'),tok=document.getElementById('tok'),bars=document.getElementById('bars'),why=document.getElementById('why');
+  // illustrative $/1M tokens (cost with 2.4x spike, sell)
+  var tiers=[{n:'Premium',c:7.2,s:9.0,col:'#0E1410'},{n:'Standard',c:1.9,s:4.0,col:'#0A6B44'},{n:'Economy',c:0.5,s:1.6,col:'#12B36E'}];
+  var floor=30;
+  function render(){
+    var t=+sl.value; tok.textContent=t.toLocaleString();
+    var rows='',chosen=null,best=Math.max.apply(null,tiers.map(function(x){return x.c}));
+    tiers.forEach(function(x){
+      var cost=t/1e6*x.c,sell=t/1e6*x.s,m=Math.round((sell-cost)/sell*100),ok=m>=floor;
+      if(ok&&!chosen)chosen={n:x.n,m:m};
+      rows+='<div class="bar"><span><b style="font-weight:600">'+x.n+'</b><br><small class="muted mono">$'+cost.toFixed(4)+' cost</small></span><i style="width:'+(x.c/best*100)+'%;background:'+x.col+';opacity:'+(ok?1:.3)+'"></i><span class="mono" style="text-align:right">'+m+'%</span><span style="color:'+(ok?'var(--g-700)':'var(--sv-t)')+'">'+(ok?'✓':'✕')+'</span></div>';
+    });
+    bars.innerHTML=rows;
+    var prem=Math.round((tiers[0].s-tiers[0].c)/tiers[0].s*100);
+    why.innerHTML=chosen?'Routed to <b>'+chosen.n+'</b> — premium would run at '+prem+'% margin, under the '+floor+'% floor.':'Request declined — no tier clears the floor.';
+  }
+  sl.addEventListener('input',render);render();
+})();
+</script>
+</body>
+</html>

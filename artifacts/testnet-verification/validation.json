@@ -1,0 +1,29 @@
+{
+  "unitIntegration": {
+    "passed": 79,
+    "files": 9
+  },
+  "httpDevelopment": {
+    "passed": 31,
+    "baseUrl": "http://localhost:3002"
+  },
+  "httpStandaloneProduction": {
+    "passed": 31,
+    "baseUrl": "http://localhost:3003"
+  },
+  "rustContract": {
+    "passed": 9
+  },
+  "liveProviders": {
+    "passed": 4
+  },
+  "typeScript": "passed",
+  "eslint": "passed",
+  "productionBuild": "passed",
+  "clientProviderKeyLeak": false,
+  "publicEvidenceCredentialLeak": false,
+  "publicDeployment": "Deferred by user; not published",
+  "productionPostgreSQL": "Not provisioned or externally verified",
+  "interactiveOwnerWallet": "Not exercised; actual testnet signatures used fresh test-only wallets",
+  "verifiedAt": "2026-11-14T13:45:42.280Z"
+}

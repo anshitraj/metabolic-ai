@@ -1,0 +1,171 @@
+{
+  "$comment": "Model catalog. Prices are USD per 1M tokens. `cost` is what the provider charges us (keep in sync with the provider's pricing page); `sell` is what we charge customers. A model is enabled only when its provider key is set. Entries with cost null must get their prices from the environment (see .env.example) and stay disabled until they do. Gemini prices: Google Gemini API paid tier as published 2026-11-14 (3.8 Flash promo price runs through 2026-12-31).",
+  "models": [
+    {
+      "id": "anthropic:claude-opus-5-5",
+      "provider": "anthropic",
+      "model": "claude-opus-5-5",
+      "label": "Claude Opus 5.5",
+      "tier": "premium",
+      "quality": 96,
+      "capabilities": [
+        "chat",
+        "code",
+        "reasoning",
+        "long_context"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 4,
+        "out": 20
+      },
+      "sell": {
+        "in": 8,
+        "out": 40
+      },
+      "effort": "medium"
+    },
+    {
+      "id": "anthropic:claude-sonnet-5-5",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "label": "Claude Sonnet 5.5",
+      "tier": "standard",
+      "quality": 88,
+      "capabilities": [
+        "chat",
+        "code",
+        "reasoning",
+        "long_context"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 2,
+        "out": 10
+      },
+      "sell": {
+        "in": 4,
+        "out": 20
+      },
+      "effort": "low"
+    },
+    {
+      "id": "anthropic:claude-haiku-5-5",
+      "provider": "anthropic",
+      "model": "claude-haiku-5-5",
+      "label": "Claude Haiku 5.5",
+      "tier": "economy",
+      "quality": 72,
+      "capabilities": [
+        "chat",
+        "code"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 0.1,
+        "out": 0.5
+      },
+      "sell": {
+        "in": 0.4,
+        "out": 2
+      },
+      "effort": "low"
+    },
+    {
+      "id": "gemini:gemini-3.1-pro-preview",
+      "provider": "gemini",
+      "model": "gemini-3.1-pro-preview",
+      "label": "Gemini 3.1 Pro Preview",
+      "tier": "premium",
+      "quality": 90,
+      "capabilities": [
+        "chat",
+        "code",
+        "reasoning",
+        "long_context"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 2,
+        "out": 12
+      },
+      "sell": {
+        "in": 4,
+        "out": 24
+      }
+    },
+    {
+      "id": "gemini:gemini-3.8-flash",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "label": "Gemini 3.8 Flash",
+      "tier": "standard",
+      "quality": 84,
+      "capabilities": [
+        "chat",
+        "code",
+        "reasoning",
+        "long_context"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 0.75,
+        "out": 3.75
+      },
+      "sell": {
+        "in": 1.6,
+        "out": 8
+      }
+    },
+    {
+      "id": "gemini:gemini-3.1-flash-lite",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "label": "Gemini 3.1 Flash-Lite",
+      "tier": "economy",
+      "quality": 70,
+      "capabilities": [
+        "chat",
+        "code"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 0.25,
+        "out": 1.5
+      },
+      "sell": {
+        "in": 0.75,
+        "out": 4.5
+      }
+    },
+    {
+      "id": "deepseek:chat",
+      "provider": "deepseek",
+      "model": "env:DEEPSEEK_MODEL|deepseek-chat",
+      "label": "DeepSeek Chat",
+      "tier": "economy",
+      "quality": 74,
+      "capabilities": [
+        "chat",
+        "code"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": null,
+      "sellMarkup": 3
+    },
+    {
+      "id": "llama:default",
+      "provider": "llama",
+      "model": "env:LLAMA_MODEL",
+      "label": "Llama (hosted)",
+      "tier": "economy",
+      "quality": 66,
+      "capabilities": [
+        "chat"
+      ],
+      "maxOutputTokens": 2048,
+      "cost": null,
+      "sellMarkup": 3
+    }
+  ]
+}

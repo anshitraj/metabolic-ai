@@ -1,0 +1,9 @@
+node_modules
+.next
+.next-*
+.env
+.env.*
+!.env*.example
+*.tsbuildinfo
+.data
+legacy-algebra

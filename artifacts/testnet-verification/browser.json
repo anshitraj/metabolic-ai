@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "authenticatedWith": "Real testnet NEP-413 signature",
+  "checks": [
+    "create pass through UI",
+    "one-time bound credential",
+    "revoke through UI",
+    "server rejects revoked credential",
+    "live request activity",
+    "accounting commitment link",
+    "desktop and mobile layouts",
+    "independent receipt verification UI"
+  ],
+  "pageErrors": []
+}

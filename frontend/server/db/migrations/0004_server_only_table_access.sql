@@ -1,0 +1,23 @@
+ALTER TABLE "api_keys" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "audit_events" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "auth_nonces" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "chain_transactions" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "conversations" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "credit_balances" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "deposit_intents" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "deposits" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "economic_receipts" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "economic_snapshots" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "events" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "ledger_entries" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "policy_configs" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "price_snapshots" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "provider_health" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "routing_decisions" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "sessions" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "simulation_scenarios" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "spend_passes" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "state_transitions" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "system_state" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "usage_requests" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "users" ENABLE ROW LEVEL SECURITY;

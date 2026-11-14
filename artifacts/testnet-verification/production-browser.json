@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "server": "Next.js standalone production output",
+  "port": 3003,
+  "checks": [
+    "SSR receipt heading",
+    "hydrated verification form",
+    "hydrated developer navigation",
+    "bundled JS and CSS load under production CSP"
+  ],
+  "pageErrors": [],
+  "failedAssets": []
+}

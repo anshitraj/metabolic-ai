@@ -1,0 +1,37 @@
+# Dependencies and generated builds, anywhere in the repository.
+node_modules/
+.node_modules.algebra-old/
+.next/
+.next-*/
+target/
+coverage/
+out/
+dist/
+*.tsbuildinfo
+*.log
+
+# Runtime databases, wallet credentials, sessions and local configuration.
+.data/
+.env*
+!.env*.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+.near-credentials/
+.vercel/
+.railway/
+
+# Local assistant/editor state.
+.claude/
+.impeccable/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Keep only the reviewed, credential-free testnet evidence.
+/artifacts/*
+!/artifacts/testnet-verification/

@@ -1,0 +1,147 @@
+{
+  "network": "testnet",
+  "owner": "solrishu.testnet",
+  "contractId": "metabolic-d0e41b6dc5.testnet",
+  "customerAccountId": "metabolic-customer-d0e41b6dc5.testnet",
+  "signedBy": "Fresh testnet wallets using NEP-413 and locally held test-only keys; user wallet UI signing was not exercised.",
+  "policy": {
+    "version": 2,
+    "hardReserveMicro": "100000",
+    "abundanceMinMarginBp": 3000,
+    "abundanceMinCoverageBp": 30000,
+    "defensiveEnterMarginBp": 2000,
+    "defensiveEnterCoverageBp": 15000,
+    "minDwellSeconds": 5,
+    "recoveryDwellSeconds": 5,
+    "hysteresisBp": 500
+  },
+  "zeroCredit": {
+    "status": 402,
+    "code": "INSUFFICIENT_CREDITS",
+    "available": "0"
+  },
+  "capital": {
+    "txHash": "3mqKuwdbKhNpTc4yMmQ97PZzU4fgsL7ZJFPPSrtbzbKd",
+    "explorer": "https://testnet.nearblocks.io/txns/3mqKuwdbKhNpTc4yMmQ97PZzU4fgsL7ZJFPPSrtbzbKd",
+    "usd": "2656000"
+  },
+  "deposit": {
+    "txHash": "CCTSNoE67X8Ji7dghvHEwGqsk8kNYyXQt7juJcdEr2tC",
+    "explorer": "https://testnet.nearblocks.io/txns/CCTSNoE67X8Ji7dghvHEwGqsk8kNYyXQt7juJcdEr2tC",
+    "usd": "664000"
+  },
+  "duplicateDeposit": {
+    "code": "DUPLICATE",
+    "balanceUnchanged": true
+  },
+  "normalRequest": {
+    "model": "Gemini 3.1 Pro Preview",
+    "modelId": "gemini:gemini-3.1-pro-preview",
+    "tier": "premium",
+    "output": "A **spending limit** is a predetermined maximum amount of money you are allowed to spend on a specific account or within a set timeframe.",
+    "textFrames": 2,
+    "reserved": "26708",
+    "charge": "10868",
+    "providerCost": "5434",
+    "providerCostSource": "provider_usage",
+    "usageId": "60f4f8de-3e63-4f1d-ac65-841bd9fd4d94",
+    "explanation": "Routed to Premium (gemini-3.1-pro-preview): projected margin 50%, best value allowed in ABUNDANCE. Spend Pass policy v1 restricts the model choice to the authorized budget and allowed models.",
+    "spendPass": {
+      "id": "1f33c94f-73ec-44e5-8095-272b8ab2e21b",
+      "name": "Verified research allowance",
+      "policyVersion": 1
+    }
+  },
+  "tightRequest": {
+    "model": "Gemini 3.1 Flash-Lite",
+    "modelId": "gemini:gemini-3.1-flash-lite",
+    "tier": "economy",
+    "output": "A spending limit is a pre-set maximum amount of money that you are permitted to authorize for transactions within a specific timeframe.",
+    "textFrames": 2,
+    "reserved": "5008",
+    "charge": "153",
+    "providerCost": "52",
+    "providerCostSource": "provider_usage",
+    "usageId": "309f93b6-bce2-49a1-86f5-58780d5422dd",
+    "explanation": "Routed to Economy (gemini-3.1-flash-lite): projected margin 67%, best value allowed in ABUNDANCE. Spend Pass policy v1 restricts the model choice to the authorized budget and allowed models.",
+    "spendPass": {
+      "id": "dada3100-0d8f-40f6-a8f5-d2c0d8564907",
+      "name": "Verified tighter allowance",
+      "policyVersion": 1
+    }
+  },
+  "revoked": {
+    "code": "PASS_REVOKED",
+    "status": 403,
+    "balanceUnchanged": true
+  },
+  "receipt": {
+    "receiptId": "rcpt_20261114_132223_abd8ab1f",
+    "status": "finalized",
+    "txHash": "4D3oEfyzfNE4mi3EjdoWbpLrmWjY1qVKpvDzVY6NtLyi",
+    "explorer": "https://testnet.nearblocks.io/txns/4D3oEfyzfNE4mi3EjdoWbpLrmWjY1qVKpvDzVY6NtLyi",
+    "hash": "6070e28ada3c43285db1e977f07a5e9602d4896ff933b57985d19216ed32ee69"
+  },
+  "independentVerification": {
+    "match": true,
+    "storedHash": "6070e28ada3c43285db1e977f07a5e9602d4896ff933b57985d19216ed32ee69",
+    "recomputedHash": "6070e28ada3c43285db1e977f07a5e9602d4896ff933b57985d19216ed32ee69",
+    "onChainHash": "6070e28ada3c43285db1e977f07a5e9602d4896ff933b57985d19216ed32ee69"
+  },
+  "reservationsReleased": true,
+  "treasury": {
+    "onChain": {
+      "amountYocto": "9990117638704647300000000",
+      "lockedYocto": "0",
+      "storageUsage": 317624
+    },
+    "recordedYocto": {
+      "capital": "800000000000000000000000",
+      "credits": "200000000000000000000000"
+    },
+    "note": "The contract also holds faucet setup funds for storage and gas; on-chain balance and credited deposit totals are different measures. Provider expenses are offchain accruals, not on-chain provider payments."
+  },
+  "readiness": {
+    "ready": true,
+    "network": "testnet",
+    "checks": [
+      {
+        "name": "database",
+        "ok": true,
+        "detail": "Embedded database is available. Production requires a persistent volume or PostgreSQL."
+      },
+      {
+        "name": "provider",
+        "ok": true,
+        "detail": "3 priced models configured. This is configuration readiness; use an operator model test to verify generation."
+      },
+      {
+        "name": "operators",
+        "ok": true,
+        "detail": "2 server-configured operator account(s)."
+      },
+      {
+        "name": "network",
+        "ok": true,
+        "detail": "RPC reports testnet; configured testnet."
+      },
+      {
+        "name": "contract",
+        "ok": true,
+        "detail": "metabolic-d0e41b6dc5.testnet; owner solrishu.testnet; unpaused."
+      },
+      {
+        "name": "receipt-signer",
+        "ok": true,
+        "detail": "The runtime receipt signer must be authorized by the contract."
+      },
+      {
+        "name": "receipt-key-scope",
+        "ok": true,
+        "detail": "Receipt key must have a finite positive allowance and only commit_receipt access to this contract. Full-access server keys are rejected."
+      }
+    ],
+    "observedAt": "2026-11-14T13:23:01.081Z"
+  },
+  "completedAt": "2026-11-14T13:23:01.082Z"
+}

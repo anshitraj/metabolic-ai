@@ -1,0 +1,19 @@
+{
+  "network": "testnet",
+  "owner": "solrishu.testnet",
+  "contractId": "metabolic-d0e41b6dc5.testnet",
+  "operatorAccountId": "operator.metabolic-d0e41b6dc5.testnet",
+  "customerAccountId": "metabolic-customer-d0e41b6dc5.testnet",
+  "receiptPublicKey": "ed25519:7KFrAq2DotYDQByCArPEhCKLJCEMy7CxL6rkRRb9TmHJ",
+  "receiptPermission": {
+    "allowance": "200000000000000000000000",
+    "method_names": [
+      "commit_receipt"
+    ],
+    "receiver_id": "metabolic-d0e41b6dc5.testnet"
+  },
+  "deployTx": "6KB5r6PNm81LtaqZPwmAo7Fp5wNJd6CgUZ5XG56hQMZX",
+  "deployExplorer": "https://testnet.nearblocks.io/txns/6KB5r6PNm81LtaqZPwmAo7Fp5wNJd6CgUZ5XG56hQMZX",
+  "wasmSha256": "cd66a261b87fb34ebbc3d497baab3005361c322035afded08c90c1b792c784a0",
+  "observedAt": "2026-11-14T13:17:30.158Z"
+}
