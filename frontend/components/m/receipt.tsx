@@ -31,8 +31,8 @@ export function ReceiptCard({ r, compact }: { r: ReceiptDTO; compact?: boolean }
   const s = STATUS[r.status];
   return (
     <div className="rounded-xl bg-stage p-3.5 text-[12.5px] text-stage-ink">
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-mono font-semibold">{r.id}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="break-all font-mono font-semibold">{r.id}</span>
         <span className={cx("inline-flex items-center gap-1 font-semibold", s.cls)}>
           <span className="h-1.5 w-1.5 rounded-full bg-current" /> {s.label}
         </span>

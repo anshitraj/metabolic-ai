@@ -124,7 +124,7 @@ export function LineChart({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${W} ${height}`}
-        className="w-full touch-none select-none"
+        className="w-full touch-pan-y select-none"
         role="img"
         aria-label={ariaLabel}
         onPointerMove={onMove}
@@ -261,7 +261,7 @@ export function StateTimeline({
             key={i}
             type="button"
             className="absolute top-0 -translate-x-1/2 p-1"
-            style={{ left: `${pct(s.at)}%` }}
+            style={{ left: `clamp(10px, ${pct(s.at)}%, calc(100% - 10px))` }}
             onMouseEnter={() => setTip({ x: pct(s.at), text: s.label })}
             onMouseLeave={() => setTip(null)}
             onFocus={() => setTip({ x: pct(s.at), text: s.label })}

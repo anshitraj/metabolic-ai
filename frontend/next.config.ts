@@ -42,6 +42,11 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/**": ["./server/db/migrations/**", "./node_modules/@electric-sql/pglite/dist/**"],
   },
+  // Runtime databases, testnet credentials and local environment files must
+  // never travel with a standalone build prepared on a developer's machine.
+  outputFileTracingExcludes: {
+    "/*": ["./.data/**/*", "./.env", "./.env.*"],
+  },
   async redirects() {
     // Old Algebra console routes → their Metabolic homes.
     return [
@@ -54,7 +59,6 @@ const nextConfig: NextConfig = {
       { source: "/console/firewall", destination: "/console", permanent: false },
       { source: "/console/passes", destination: "/console", permanent: false },
       { source: "/console/projects", destination: "/console/developers", permanent: false },
-      { source: "/console/connect", destination: "/console/developers", permanent: false },
       { source: "/console/quickstart", destination: "/console/developers", permanent: false },
       { source: "/onboarding", destination: "/console", permanent: false },
       { source: "/signup", destination: "/login", permanent: false },

@@ -225,6 +225,39 @@ describe("state machine on real books", () => {
 });
 
 describe("simulation isolation", () => {
+  it("keeps fixed overhead out of the compute margin and counts it once in runway", async () => {
+    const s = await createScenario(null);
+    // The seeded five-minute window has 30 ticks of $1.50/h overhead.
+    expect(BigInt(s.overview.expenseTotal) - BigInt(s.overview.expenseWindow)).toBe((1_500_000n * 10_000n / 3_600_000n) * 30n);
+    expect(s.overview.runwaySeconds).toBeGreaterThan(0);
+  });
+
+  it("preserves elapsed time when refreshes arrive faster than a simulation tick", async () => {
+    let now = Date.now();
+    const clock = vi.spyOn(Date, "now").mockImplementation(() => now);
+    try {
+      const s = await createScenario(null);
+      let latest = s;
+      for (let i = 0; i < 5; i++) {
+        now += 100;
+        latest = (await getScenario(s.id, null))!;
+      }
+      expect(Date.parse(latest.overview.at) - Date.parse(s.overview.at)).toBe(10_000);
+    } finally { clock.mockRestore(); }
+  });
+
+  it("advances one simulated minute on demand without changing real balances", async () => {
+    const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now());
+    try {
+      const s = await createScenario(null);
+      const balance = await getBalance(customer);
+      const next = (await applyAction(s.id, null, { type: "advance_time", seconds: 60 }))!;
+      expect(Date.parse(next.overview.at) - Date.parse(s.overview.at)).toBe(60_000);
+      expect(next.totals.requests).toBeGreaterThan(s.totals.requests);
+      expect((await getBalance(customer)).available).toBe(balance.available);
+    } finally { clock.mockRestore(); }
+  });
+
   it("drives states without touching real books", async () => {
     const db = await getDb();
     const count = async () => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { OperatingState } from "@/lib/economics/types";
 import { cx, StateChip } from "./ui";
 
@@ -22,33 +23,48 @@ export const GLOSSARY = {
 /** A small "?" that explains a term in plain words. Hover, focus or tap. */
 export function Hint({ term, className }: { term: keyof typeof GLOSSARY; className?: string }) {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ left: 12, top: 64 });
   const id = useId();
   const ref = useRef<HTMLSpanElement>(null);
+  const show = () => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (rect) setPosition({ left: Math.max(12, Math.min(rect.left + rect.width / 2 - 120, window.innerWidth - 252)), top: rect.bottom + 100 > window.innerHeight ? Math.max(12, rect.top - 100) : rect.bottom + 8 });
+    setOpen(true);
+  };
   useEffect(() => {
     if (!open) return;
     const close = (e: MouseEvent) => {
       if (!ref.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    const dismiss = () => setOpen(false);
+    const reposition = () => {
+      const rect = ref.current?.getBoundingClientRect();
+      if (rect) setPosition({ left: Math.max(12, Math.min(rect.left + rect.width / 2 - 120, window.innerWidth - 252)), top: rect.bottom + 100 > window.innerHeight ? Math.max(12, rect.top - 100) : rect.bottom + 8 });
+    };
+    const key = (e: KeyboardEvent) => { if (e.key === "Escape") dismiss(); };
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    document.addEventListener("keydown", key);
+    return () => { document.removeEventListener("mousedown", close); window.removeEventListener("scroll", reposition, true); window.removeEventListener("resize", reposition); document.removeEventListener("keydown", key); };
   }, [open]);
   return (
-    <span ref={ref} className={cx("relative inline-flex align-middle", className)} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+    <span ref={ref} className={cx("relative inline-flex align-middle", className)} onMouseEnter={show} onMouseLeave={() => { if (!ref.current?.contains(document.activeElement)) setOpen(false); }}>
       <button
         type="button"
         aria-describedby={open ? id : undefined}
         aria-label={`What is ${term}?`}
-        onFocus={() => setOpen(true)}
+        onFocus={show}
         onBlur={() => setOpen(false)}
-        onClick={() => setOpen(true)}
-        className="grid h-4 w-4 place-items-center rounded-full border border-line-strong text-[9.5px] font-bold normal-case tracking-normal text-muted hover:border-g-500 hover:text-g-700"
+        onClick={show}
+        className="grid h-6 w-6 place-items-center rounded-full border border-line-strong text-[9.5px] font-bold normal-case tracking-normal text-muted hover:border-g-500 hover:text-g-700 sm:h-4 sm:w-4"
       >
         ?
       </button>
-      {open && (
-        <span role="tooltip" id={id} className="absolute left-1/2 top-6 z-30 w-60 -translate-x-1/2 rounded-lg border border-line bg-ink px-3 py-2 text-left text-[12px] font-normal normal-case leading-[18px] tracking-normal text-white shadow-[0_10px_30px_rgba(14,20,16,.25)]">
+      {open && createPortal(
+        <span role="tooltip" id={id} style={position} className="fixed z-40 w-[min(240px,calc(100vw-24px))] rounded-lg border border-line bg-ink px-3 py-2 text-left text-[12px] font-normal normal-case leading-[18px] tracking-normal text-white shadow-[0_10px_30px_rgba(14,20,16,.25)]">
           {GLOSSARY[term]}
-        </span>
+        </span>, document.body
       )}
     </span>
   );

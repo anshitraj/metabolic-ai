@@ -41,7 +41,7 @@ export function statusSentence(o: OverviewDTO): { headline: string; detail: stri
     case "RECOVERY":
       return { headline: "Funding is back. It's rebuilding carefully.", detail: "It returns to the best models only after staying healthy for a few minutes." };
     default:
-      return { headline: "It's healthy: earning more than it spends.", detail: "So it lets itself use the best AI models it can afford." };
+      return { headline: "Funds are healthy. There's room to think.", detail: "It can consider stronger models when the request fits its budget." };
   }
 }
 
@@ -93,24 +93,20 @@ const KEY = "metabolic:journey-collapsed";
 export function Journey({ overview }: { overview: OverviewDTO | null }) {
   const { me, refresh } = useSession();
   const setup = useSetup();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState<boolean | null>(null);
   useEffect(() => {
     try {
+      const saved = localStorage.getItem(KEY);
       // eslint-disable-next-line react-hooks/set-state-in-effect -- read a per-browser preference after mount
-      setCollapsed(localStorage.getItem(KEY) === "1");
+      setCollapsed(saved === null ? null : saved === "1");
     } catch {
       /* storage unavailable */
     }
   }, []);
   const toggle = () => {
-    setCollapsed((c) => {
-      try {
-        localStorage.setItem(KEY, c ? "0" : "1");
-      } catch {
-        /* storage unavailable */
-      }
-      return !c;
-    });
+    const next = !isCollapsed;
+    try { localStorage.setItem(KEY, next ? "1" : "0"); } catch { /* storage unavailable */ }
+    setCollapsed(next);
   };
 
   const s = setup.data;
@@ -185,12 +181,13 @@ export function Journey({ overview }: { overview: OverviewDTO | null }) {
   const firstOpen = steps.findIndex((x) => !x.done);
   const core = steps.filter((x) => x.key !== "stress");
   const doneCount = core.filter((x) => x.done).length;
+  const isCollapsed = collapsed ?? (doneCount === core.length);
   const sentence = overview ? statusSentence(overview) : null;
   const state: OperatingState = overview?.state ?? "ABUNDANCE";
 
   return (
-    <section aria-label="What this is and what to do next" className="mb-5 overflow-hidden rounded-2xl border border-line bg-surface">
-      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
+    <section aria-label="What this is and what to do next" className="m-journey mb-5 overflow-hidden rounded-2xl border border-line bg-surface">
+      <div className="m-journey-intro flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
         <div className="h-16 w-16 shrink-0 rounded-2xl bg-stage p-1.5">
           <OrganismFallback state={state} filaments={false} />
         </div>
@@ -207,13 +204,13 @@ export function Journey({ overview }: { overview: OverviewDTO | null }) {
             </p>
           )}
         </div>
-        <button type="button" onClick={toggle} aria-expanded={!collapsed} className="shrink-0 self-start rounded-lg border border-line px-3 py-1.5 text-[12.5px] font-semibold text-ink-2 hover:border-line-strong hover:text-ink sm:self-center">
-          {collapsed ? `Show guide · ${doneCount}/${core.length}` : "Hide guide"}
+        <button type="button" onClick={toggle} aria-expanded={!isCollapsed} className="shrink-0 self-start rounded-lg border border-line px-3 py-1.5 text-[12.5px] font-semibold text-ink-2 hover:border-line-strong hover:text-ink sm:self-center">
+          {isCollapsed ? `Setup guide · ${doneCount}/${core.length}` : "Hide guide"}
         </button>
       </div>
 
       <AnimatePresence initial={false}>
-        {!collapsed && (
+        {!isCollapsed && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.28, ease: [0.2, 0, 0, 1] }} className="overflow-hidden">
             <div className="border-t border-line bg-paper/60 px-5 py-4 sm:px-6">
               <div className="mb-3 flex items-center gap-3">
@@ -241,8 +238,9 @@ export function Journey({ overview }: { overview: OverviewDTO | null }) {
                           <div className={cx("text-[14.5px] font-semibold", st.done ? "text-ink-2" : "text-ink")}>{st.title}</div>
                           {(current || st.key === "claim") && <p className="mt-0.5 text-[13px] leading-5 text-ink-2">{st.body}</p>}
                           {current && st.action && st.key === "claim" && <div className="mt-2">{st.action}</div>}
+                          {current && st.action && st.key !== "claim" && <div className="mt-3 sm:hidden">{st.action}</div>}
                         </div>
-                        {current && st.action && st.key !== "claim" && <div className="shrink-0">{st.action}</div>}
+                        {current && st.action && st.key !== "claim" && <div className="hidden shrink-0 sm:block">{st.action}</div>}
                         {!current && !st.done && st.key === "stress" && <Link href="/console/stress-lab" className="shrink-0 text-[13px] font-semibold text-g-700 hover:underline">Try it →</Link>}
                       </div>
                     </li>

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { MotionProvider } from "@/components/motion-provider";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"], display: "swap" });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
+const brand = localFont({ src: "../public/fonts/Manrope-Variable.ttf", variable: "--font-brand", weight: "200 800", display: "swap" });
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
@@ -29,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${geist.variable} ${geistMono.variable} ${newsreader.variable}`}
+      className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} ${brand.variable}`}
     >
       <body className="min-h-screen antialiased selection:bg-g-200 selection:text-g-900">
         <MotionProvider>{children}</MotionProvider>

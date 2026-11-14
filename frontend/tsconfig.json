@@ -39,7 +39,17 @@
     ".next-build/types/**/*.ts",
     ".next-build/dev/types/**/*.ts",
     ".next-testnet-demo/types/**/*.ts",
-    ".next-testnet-demo/dev/types/**/*.ts"
+    ".next-testnet-demo/dev/types/**/*.ts",
+    ".next-motion-dev/types/**/*.ts",
+    ".next-motion-dev/dev/types/**/*.ts",
+    ".next-motion-production/types/**/*.ts",
+    ".next-motion-production/dev/types/**/*.ts",
+    ".next-motion-final/types/**/*.ts",
+    ".next-motion-final/dev/types/**/*.ts",
+    ".next-motion-release/types/**/*.ts",
+    ".next-motion-release/dev/types/**/*.ts",
+    ".next-stress-motion/types/**/*.ts",
+    ".next-stress-motion/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

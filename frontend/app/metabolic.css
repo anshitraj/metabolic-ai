@@ -162,3 +162,6 @@
 @media (prefers-reduced-motion: reduce) {
   .m-breath, .m-beat, .m-spin, .m-spin-rev, .m-flow, .m-live-dot { animation: none !important; }
 }
+
+/* Keep mobile navigation clear of the device home indicator. */
+.m-mobile-nav { padding-bottom: max(4px, env(safe-area-inset-bottom)); }

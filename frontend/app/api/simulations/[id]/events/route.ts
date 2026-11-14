@@ -11,6 +11,7 @@ const Action = z.discriminatedUnion("type", [
   z.object({ type: z.literal("restore_funding"), usd: z.number().min(1).max(1000).optional() }),
   z.object({ type: z.literal("provider_failure"), provider: z.string().max(32), down: z.boolean() }),
   z.object({ type: z.literal("reset") }),
+  z.object({ type: z.literal("advance_time"), seconds: z.number().int().min(10).max(300) }),
 ]);
 
 export const POST = route<{ params: Promise<{ id: string }> }>(async (req, { params, requestId }) => {

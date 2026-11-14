@@ -35,7 +35,7 @@ export default function OverviewPage() {
     <div>
       <PageHeader
         title="Overview"
-        description="A live view of an AI that runs like a small business: what it has, what it earns, what it spends, and how that changes the way it thinks."
+        description="Your AI business at a glance. Follow its funds, model choices and every decision."
         actions={
           overview && (
             <span className="text-[12.5px] text-muted">
@@ -51,7 +51,7 @@ export default function OverviewPage() {
       <MetricRow o={overview} />
 
       <div className="mt-4 grid gap-4 xl:grid-cols-12">
-        <OrganismStage overview={overview} className="min-h-[420px] sm:min-h-[540px] xl:col-span-8" onSelect={setDrawer} />
+        <OrganismStage overview={overview} className="min-h-[350px] sm:min-h-[540px] xl:col-span-8" onSelect={setDrawer} />
         <IntelligencePanel o={overview} lastSnap={lastSnap} className="xl:col-span-4" />
       </div>
 
@@ -162,15 +162,15 @@ function MetricRow({ o }: { o: OverviewDTO | null }) {
       ]
     : Array.from({ length: 6 }, (_, i) => ({ k: ["Treasury", "Revenue · 1h", "Inference spend · 1h", "Gross margin", "Runway", "State"][i], v: <Skeleton className="h-7 w-24" /> }));
   return (
-    <Card className="grid grid-cols-2 overflow-hidden sm:grid-cols-3 xl:grid-cols-6">
+    <div className="m-metric-grid grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {cells.map((c, i) => (
-        <div key={c.k} className={cx("border-line px-4 py-3.5", i % 2 === 1 && "border-l", "sm:border-l-0 sm:[&:not(:nth-child(3n+1))]:border-l xl:[&:not(:first-child)]:border-l", i >= 2 && "border-t sm:border-t-0", i >= 3 && "sm:border-t xl:border-t-0")}>
+        <Card key={c.k} className={cx("m-metric p-4", i === 0 && "m-metric-primary")}>
           <Label className="flex items-center gap-1.5 text-[10.5px]">{c.k} {HINT[c.k] && <Hint term={HINT[c.k]} />}</Label>
-          <div className="mt-1.5 text-[22px] font-medium leading-7 text-ink">{c.v}</div>
+          <div className="m-metric-value mt-3 text-ink">{c.v}</div>
           {c.d && <div className="mt-0.5 truncate font-mono text-[11.5px] text-muted">{c.d}</div>}
-        </div>
+        </Card>
       ))}
-    </Card>
+    </div>
   );
 }
 
@@ -181,7 +181,7 @@ function IntelligencePanel({ o, lastSnap, className }: { o: OverviewDTO | null; 
   return (
     <Card className={cx("flex flex-col p-5", className)}>
       <Label>Intelligence</Label>
-      <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 text-[13.5px]">
+      <dl className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2.5 text-[13.5px] [&>dd]:min-w-0 [&>dd]:break-words">
         <dt className="text-muted">Active model</dt>
         <dd className="text-right">{o.activeModel ? <span className="font-mono text-[12.5px]">{o.activeModel.label}</span> : <span className="text-muted">none yet</span>}</dd>
         <dt className="text-muted">Tier</dt>
@@ -195,7 +195,7 @@ function IntelligencePanel({ o, lastSnap, className }: { o: OverviewDTO | null; 
         <dt className="text-muted">Rolling margin</dt>
         <dd className="text-right m-num">{formatBp(o.rollingMarginBp)}</dd>
         <dt className="text-muted">Providers</dt>
-        <dd className="flex justify-end gap-2 text-[12px]">
+        <dd className="flex flex-wrap justify-end gap-x-2 gap-y-1.5 text-[12px]">
           {o.providers.map((p) => (
             <span key={p.provider} className="inline-flex items-center gap-1">
               <span className={cx("h-2 w-2 rounded-full", !p.configured ? "bg-line-strong" : p.health === "ok" ? "bg-g-500" : p.health === "degraded" ? "bg-df" : "bg-sv")} />

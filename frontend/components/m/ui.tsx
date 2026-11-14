@@ -161,7 +161,7 @@ export function TierBadge({ tier }: { tier: string | null | undefined }) {
 
 export function Card({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cx("rounded-xl border border-line bg-surface", className)} {...rest}>
+    <div className={cx("m-card min-w-0 rounded-xl border border-line bg-surface", className)} {...rest}>
       {children}
     </div>
   );
@@ -173,10 +173,10 @@ export function Label({ children, className }: { children: React.ReactNode; clas
 
 export function PageHeader({ title, description, actions, eyebrow }: { title: string; description?: React.ReactNode; actions?: React.ReactNode; eyebrow?: React.ReactNode }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="m-page-header mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         {eyebrow && <div className="mb-2">{eyebrow}</div>}
-        <h1 className="font-serif text-[30px] leading-[36px] tracking-[-0.01em] text-ink sm:text-[34px] sm:leading-[40px]">{title}</h1>
+        <h1 className="m-page-title text-ink">{title}</h1>
         {description && <p className="mt-1.5 max-w-2xl text-[14.5px] leading-6 text-ink-2">{description}</p>}
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
@@ -319,7 +319,7 @@ export function Dialog({ open, onClose, title, children, wide }: { open: boolean
     >
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 className="text-[16px] font-semibold">{title}</h2>
-        <button type="button" onClick={onClose} className="rounded-md p-1 text-muted hover:bg-paper-sunken hover:text-ink" aria-label="Close">
+        <button type="button" onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-muted hover:bg-paper-sunken hover:text-ink" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M6 6l12 12M18 6 6 18" />
           </svg>
@@ -341,4 +341,4 @@ export function Field({ label, hint, children }: { label: string; hint?: React.R
 }
 
 export const inputClass =
-  "h-10 w-full rounded-lg border border-line-strong bg-surface px-3 text-[14px] text-ink outline-none placeholder:text-muted focus:border-g-500 focus:ring-2 focus:ring-g-500/20";
+  "h-11 w-full min-w-0 rounded-lg border border-line-strong bg-surface px-3 text-[16px] text-ink outline-none placeholder:text-muted focus:border-g-500 focus:ring-2 focus:ring-g-500/20 sm:h-10 sm:text-[14px]";

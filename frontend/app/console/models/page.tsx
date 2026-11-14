@@ -6,6 +6,7 @@ import { useApi } from "@/lib/client/use-api";
 import { big, formatBp, formatUsd } from "@/lib/economics/money";
 import { StateTimeline } from "@/components/m/charts";
 import { Badge, Button, Card, Empty, ErrorNote, PageHeader, Skeleton, StateChip, TierBadge, cx } from "@/components/m/ui";
+import { ProviderMark } from "@/components/m/provider-mark";
 import { ModelConnectionTest } from "@/components/m/model-connection";
 import { StateGuide } from "@/components/m/guide";
 import type { OperatingState } from "@/lib/economics/types";
@@ -85,7 +86,7 @@ export default function ModelsPage() {
           <Card key={m.id} className={cx("p-4", !m.enabled && "opacity-70", m.id === activeId && "ring-2 ring-g-500")}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <div className="text-[12px] text-muted">{m.providerLabel}</div>
+                <div className="mb-2 flex items-center gap-2 text-[12px] text-muted"><ProviderMark provider={m.provider} size={22} />{m.providerLabel}</div>
                 <div className="truncate text-[15px] font-semibold">{m.label}</div>
                 <div className="truncate font-mono text-[11.5px] text-muted">{m.model}</div>
               </div>

@@ -135,7 +135,9 @@ export default function TreasuryPage() {
             <span className="text-[12px] text-muted">{d?.network}</span>
           </div>
           {d?.transactions.length ? (
-            <div className="overflow-x-auto">
+            <>
+            <div className="divide-y divide-line px-4 md:hidden">{d.transactions.map((x) => <div key={x.hash} className="py-4"><div className="flex items-center justify-between gap-3"><Badge tone={x.kind === "receipt" ? "blue" : x.depositKind === "capital" ? "neutral" : "green"}>{x.kind === "receipt" ? "Receipt" : x.depositKind === "capital" ? "Capital" : "Credits"}</Badge><span className="text-[11px] text-muted"><TimeAgo iso={x.at} /></span></div><div className="my-3 flex items-center justify-between gap-2"><strong className="m-num text-[17px]">{x.kind === "receipt" ? "Accounting commitment" : formatNear(big(x.amountYocto), 3)}</strong><Badge tone={x.status === "final" ? "green" : x.status === "failed" ? "red" : "amber"}>{x.status === "final" ? "Finalized" : x.status}</Badge></div><div className="mb-2 break-all font-mono text-[11px] text-muted">From {x.signer}</div><Hash value={x.hash} href={x.explorer} chars={9} /></div>)}</div>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-left text-[13px]">
                 <thead className="bg-paper-sunken text-[11px] uppercase tracking-wide text-muted">
                   <tr>
@@ -163,6 +165,7 @@ export default function TreasuryPage() {
                 </tbody>
               </table>
             </div>
+            </>
           ) : (
             <p className="px-5 py-6 text-[13px] text-muted">No verified on-chain transactions yet.</p>
           )}

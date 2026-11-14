@@ -46,9 +46,7 @@ export default function ReceiptsPage() {
       />
       {error && <div className="mb-4"><ErrorNote message={error} /></div>}
       {r.data && !r.data.configured && (
-        <Empty title="On-chain receipts are not configured" className="mb-4">
-          {r.data.reason}. Deploy <span className="font-mono">contracts/metabolic</span> to testnet and set <span className="font-mono">NEAR_CONTRACT_ID</span>, <span className="font-mono">NEAR_RECEIPT_SIGNER_ID</span> and <span className="font-mono">NEAR_RECEIPT_SIGNER_KEY</span>.
-        </Empty>
+        <ReceiptsSetup accountId={me?.user?.accountId ?? "your-account.testnet"} signedIn={!!me?.user} />
       )}
       <Card className="mb-4 p-5 text-[13.5px] text-ink-2">
         <b className="text-ink">What a receipt proves.</b> That these aggregate numbers were committed at this time and have not changed since — anyone can recompute the hash on the{" "}
@@ -62,9 +60,63 @@ export default function ReceiptsPage() {
             <ReceiptCard key={x.id} r={x} />
           ))}
         </div>
-      ) : (
+      ) : r.data?.configured ? (
         <Empty title="No receipts yet">The worker commits one every few minutes when there is activity. You can also publish one now.</Empty>
-      )}
+      ) : null}
     </div>
+  );
+}
+
+/** Plain-language steps to switch receipts on. The script does the deploying; no NEAR CLI needed. */
+function ReceiptsSetup({ accountId, signedIn }: { accountId: string; signedIn: boolean }) {
+  const [copied, setCopied] = useState(false);
+  const cmd = `pnpm setup:contract ${accountId}`;
+  const steps: [string, React.ReactNode][] = [
+    ["Build the contract once", <>In a terminal: <code className="font-mono text-[12.5px]">cd contracts/metabolic</code> then <code className="font-mono text-[12.5px]">cargo build --target wasm32-unknown-unknown --release</code>. Skip if you already did.</>],
+    ["Export your wallet's private key", <>MyNearWallet → Settings → Security &amp; Recovery → Export private key. It stays on your machine: the script uses it for one transaction and never saves it.</>],
+    ["Run the setup command", <>From the <code className="font-mono text-[12.5px]">frontend</code> folder. It creates <code className="font-mono text-[12.5px]">metabolic.{accountId}</code>, deploys the contract, and fills in <code className="font-mono text-[12.5px]">.env.local</code> for you.</>],
+    ["Restart the app", <>Stop and start <code className="font-mono text-[12.5px]">pnpm dev</code>. This page then lets you press <b>Publish receipt now</b>.</>],
+  ];
+  return (
+    <Card className="mb-4 overflow-hidden">
+      <div className="border-b border-line bg-df-tint/60 px-5 py-4">
+        <div className="text-[15px] font-semibold text-ink">One step left to turn receipts on</div>
+        <p className="mt-0.5 max-w-3xl text-[13.5px] leading-5 text-ink-2">
+          Receipts are written to a small contract on the NEAR blockchain, and that contract hasn&apos;t been created yet. It takes about two minutes and uses roughly 3 testnet NEAR (they stay in the contract as treasury).
+        </p>
+      </div>
+      <ol className="divide-y divide-line">
+        {steps.map(([t, d], i) => (
+          <li key={t} className="flex gap-3 px-5 py-3.5">
+            <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-[12px] font-bold text-white">{i + 1}</span>
+            <div className="min-w-0">
+              <div className="text-[14px] font-semibold text-ink">{t}</div>
+              <p className="mt-0.5 text-[13px] leading-5 text-ink-2">{d}</p>
+              {i === 2 && (
+                <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-stage px-3 py-2">
+                  <code className="font-mono text-[12.5px] text-stage-ink">{cmd}</code>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void navigator.clipboard?.writeText(cmd).then(() => {
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      });
+                    }}
+                    className="ml-auto rounded-md bg-white/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-stage-ink hover:bg-white/16"
+                  >
+                    {copied ? "Copied ✓" : "Copy"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p className="border-t border-line bg-paper-sunken/50 px-5 py-3 text-[12.5px] leading-5 text-muted">
+        {signedIn ? "" : "Sign in first so the command uses your account name. "}
+        The app works fine without receipts; they only add public proof that its books weren&apos;t changed later. Prefer a manual route? See <span className="font-mono">contracts/metabolic/README.md</span>.
+      </p>
+    </Card>
   );
 }

@@ -1,11 +1,10 @@
 "use client";
 /* eslint-disable react-hooks/immutability, react-hooks/purity -- three.js uniforms and buffers are mutated inside useFrame (outside React render) and seeded with random geometry once in useMemo; this is the standard React Three Fiber pattern. */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Billboard, Html, Line, OrbitControls, PerformanceMonitor } from "@react-three/drei";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import type { Line2 } from "three-stdlib";
 import type { MetabolicEvent, OperatingState, Tier } from "@/lib/economics/types";
 import { useLive } from "@/lib/client/live";
@@ -24,6 +23,7 @@ import {
   particleFragment,
   particleVertex,
 } from "./shaders";
+const PostEffects = lazy(() => import("./post-effects"));
 
 export type OrganismSelect = { kind: "model" } | { kind: "treasury" } | { kind: "event"; event: MetabolicEvent };
 
@@ -37,6 +37,7 @@ export type OrganismSceneProps = {
   reduced: boolean;
   onSelect?: (s: OrganismSelect) => void;
   resetKey?: number;
+  onReady?: () => void;
 };
 
 // Composition (world units). Camera at z≈9.2 with a 36° fov sees ~±3 units,
@@ -492,6 +493,9 @@ function Organism({ state, tier, coverage, activity, modelLabel, events, reduced
 
   return (
     <>
+      <ambientLight intensity={0.65} />
+      <directionalLight position={[3, 4, 6]} intensity={2.8} color="#e8fff0" />
+      <pointLight position={[-3, -1, 3]} intensity={15} color="#2bd98a" />
       <points geometry={stars} renderOrder={-1}>
         <shaderMaterial vertexShader={dustVertex} fragmentShader={dustFragment} uniforms={u.dust} transparent depthWrite={false} />
       </points>
@@ -499,6 +503,13 @@ function Organism({ state, tier, coverage, activity, modelLabel, events, reduced
       <group ref={root}>
         {/* Body: a flowing cloud of light around a soft nucleus */}
         <group ref={body}>
+          <mesh rotation={[0.35, 0.4, -0.15]}>
+            <icosahedronGeometry args={[0.79, 3]} />
+            <meshPhysicalMaterial color={new THREE.Color(...STATE_PARAMS[state].deep)} emissive={new THREE.Color(...STATE_PARAMS[state].color)} emissiveIntensity={0.22} metalness={0.68} roughness={0.22} clearcoat={1} clearcoatRoughness={0.16} />
+          </mesh>
+          <group rotation={[0.6, 0.3, 0.25]}>
+            {[0, 1, 2].map((i) => <mesh key={i} rotation={[i * Math.PI / 3, i * Math.PI / 3, 0]}><torusGeometry args={[1.19, 0.012, 6, 96]} /><meshStandardMaterial color="#a9f0cc" metalness={0.85} roughness={0.28} transparent opacity={0.38} /></mesh>)}
+          </group>
           <Billboard>
             <mesh scale={R_CORE * 5.2} renderOrder={0}>
               <planeGeometry args={[1, 1]} />
@@ -616,12 +627,21 @@ function Controls({ resetKey }: { resetKey?: number }) {
   const ref = useRef<React.ComponentRef<typeof OrbitControls>>(null);
   useEffect(() => {
     ref.current?.reset();
+    if (ref.current?.domElement) ref.current.domElement.style.touchAction = "pan-y";
   }, [resetKey]);
-  return <OrbitControls ref={ref} enablePan={false} enableZoom minDistance={7} maxDistance={12} minPolarAngle={Math.PI / 3} maxPolarAngle={(Math.PI * 2) / 3} rotateSpeed={0.45} enableDamping />;
+  return <OrbitControls ref={ref} enablePan={false} enableZoom={false} minDistance={7} maxDistance={12} minPolarAngle={Math.PI / 3} maxPolarAngle={(Math.PI * 2) / 3} rotateSpeed={0.45} enableDamping />;
+}
+
+function FirstFrame({ onReady }: { onReady?: () => void }) {
+  const reported = useRef(false);
+  useFrame(() => {
+    if (!reported.current) { reported.current = true; queueMicrotask(() => onReady?.()); }
+  });
+  return null;
 }
 
 export default function OrganismScene(props: OrganismSceneProps) {
-  const [low, setLow] = useState(false);
+  const [low, setLow] = useState(() => matchMedia("(max-width: 767px)").matches);
   const [visible, setVisible] = useState(true);
   const wrap = useRef<HTMLDivElement>(null);
 
@@ -653,11 +673,10 @@ export default function OrganismScene(props: OrganismSceneProps) {
       >
         <PerformanceMonitor onDecline={() => setLow(true)} />
         <Organism {...props} low={low} />
+        <FirstFrame onReady={props.onReady} />
         <Controls resetKey={props.resetKey} />
         {bloom && (
-          <EffectComposer multisampling={4}>
-            <Bloom intensity={STATE_PARAMS[props.state].bloom} luminanceThreshold={0.32} luminanceSmoothing={0.4} mipmapBlur radius={0.7} />
-          </EffectComposer>
+          <Suspense fallback={null}><PostEffects intensity={STATE_PARAMS[props.state].bloom} /></Suspense>
         )}
       </Canvas>
     </div>

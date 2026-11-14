@@ -1,5 +1,5 @@
 {
-  "$comment": "Model catalog. Prices are USD per 1M tokens. `cost` is what the provider charges us (keep in sync with the provider's pricing page); `sell` is what we charge customers. A model is enabled only when its provider key is set. Entries with cost null must get their prices from the environment (see .env.example) and stay disabled until they do. Gemini prices: Google Gemini API paid tier as published 2026-11-14 (3.8 Flash promo price runs through 2026-12-31).",
+  "$comment": "Model catalog. Prices are USD per 1M tokens. `cost` is what the provider charges us (keep in sync with the provider's pricing page); `sell` is what we charge customers. A model is enabled only when its provider key is set. Entries with cost null must get their prices from the environment (see .env.example) and stay disabled until they do. Gemini prices: Google Gemini API paid tier as published 2026-11-14 (3.8 Flash promo price runs through 2026-12-31). NEAR AI Cloud prices: near.ai/pricing.md as published 2026-11-14 (private inference in attested enclaves, included in the rate).",
   "models": [
     {
       "id": "anthropic:claude-opus-5-5",
@@ -136,6 +136,73 @@
       "sell": {
         "in": 0.75,
         "out": 4.5
+      }
+    },
+    {
+      "id": "nearai:kimi-k2.6",
+      "provider": "nearai",
+      "model": "moonshotai/kimi-k2.6",
+      "label": "Kimi K2.6 (NEAR AI)",
+      "tier": "premium",
+      "quality": 86,
+      "capabilities": [
+        "chat",
+        "code",
+        "reasoning",
+        "long_context"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 0.81,
+        "out": 3.85
+      },
+      "sell": {
+        "in": 1.7,
+        "out": 8
+      }
+    },
+    {
+      "id": "nearai:deepseek-v4.1-flash",
+      "provider": "nearai",
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "label": "DeepSeek V4.1 Flash (NEAR AI)",
+      "tier": "standard",
+      "quality": 78,
+      "capabilities": [
+        "chat",
+        "code",
+        "reasoning",
+        "long_context"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 0.3,
+        "out": 1.2
+      },
+      "sell": {
+        "in": 0.65,
+        "out": 2.6
+      }
+    },
+    {
+      "id": "nearai:glm-5.3-flash",
+      "provider": "nearai",
+      "model": "z-ai/glm-5.3-flash",
+      "label": "GLM 5.3 Flash (NEAR AI)",
+      "tier": "economy",
+      "quality": 68,
+      "capabilities": [
+        "chat",
+        "code"
+      ],
+      "maxOutputTokens": 4096,
+      "cost": {
+        "in": 0.08,
+        "out": 0.5
+      },
+      "sell": {
+        "in": 0.2,
+        "out": 1.1
       }
     },
     {

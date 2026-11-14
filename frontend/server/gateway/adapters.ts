@@ -110,10 +110,15 @@ const anthropicAdapter: ProviderAdapter = {
 
 // ---------------- OpenAI-compatible (DeepSeek, hosted Llama) ----------------
 
-function openaiCompatible(provider: "deepseek" | "llama"): ProviderAdapter {
-  const keyVar = provider === "deepseek" ? "DEEPSEEK_API_KEY" : "LLAMA_API_KEY";
-  const urlVar = provider === "deepseek" ? "DEEPSEEK_BASE_URL" : "LLAMA_BASE_URL";
-  const defaultUrl = provider === "deepseek" ? "https://api.deepseek.com" : undefined;
+// NEAR AI Cloud (provider "nearai"): open models in attested secure enclaves, OpenAI-compatible.
+const COMPAT: Record<"deepseek" | "llama" | "nearai", { keyVar: string; urlVar: string; defaultUrl?: string }> = {
+  deepseek: { keyVar: "DEEPSEEK_API_KEY", urlVar: "DEEPSEEK_BASE_URL", defaultUrl: "https://api.deepseek.com" },
+  llama: { keyVar: "LLAMA_API_KEY", urlVar: "LLAMA_BASE_URL" },
+  nearai: { keyVar: "NEARAI_API_KEY", urlVar: "NEARAI_BASE_URL", defaultUrl: "https://cloud-api.near.ai/v1" },
+};
+
+function openaiCompatible(provider: "deepseek" | "llama" | "nearai"): ProviderAdapter {
+  const { keyVar, urlVar, defaultUrl } = COMPAT[provider];
   let client: OpenAI | null = null;
   const get = () => {
     if (!client) {
@@ -257,6 +262,7 @@ const ADAPTERS: Record<string, ProviderAdapter> = {
   gemini: geminiAdapter,
   deepseek: openaiCompatible("deepseek"),
   llama: openaiCompatible("llama"),
+  nearai: openaiCompatible("nearai"),
 };
 
 export function adapterFor(provider: string): ProviderAdapter {

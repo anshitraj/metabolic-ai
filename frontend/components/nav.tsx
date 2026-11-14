@@ -6,7 +6,7 @@ import { Logo } from "./logo";
 
 const LINKS = [
   { href: "/#how", label: "How it works" },
-  { href: "/demo", label: "Watch it adapt" },
+  { href: "/#faq", label: "Questions" },
   { href: "/console/developers", label: "API" },
   { href: "/verify", label: "Verify" },
 ];
@@ -14,8 +14,8 @@ const LINKS = [
 export function Nav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-paper/85 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6">
+    <header className="m-site-nav sticky top-0 z-40 border-b border-line/70 bg-paper/85 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between px-4 sm:px-6">
         <Logo />
         <nav className="hidden items-center gap-8 text-[14px] text-ink-2 md:flex" aria-label="Main">
           {LINKS.map((l) => (
@@ -28,10 +28,10 @@ export function Nav() {
           <Link href="/login" className="hidden h-10 items-center px-3 text-sm font-semibold text-ink-2 hover:text-ink sm:inline-flex">
             Sign in
           </Link>
-          <Link href="/console" className="hidden h-10 items-center rounded-lg bg-ink px-4 text-sm font-semibold text-white hover:bg-[#1c261f] sm:inline-flex">
+          <Link href="/console" className="m-nav-launch inline-flex h-10 items-center rounded-lg bg-g-700 px-3 text-[12px] font-semibold text-white hover:bg-g-900 sm:px-4 sm:text-sm">
             Launch app →
           </Link>
-          <button type="button" className="rounded-md p-2 text-ink-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-label="Menu">
+          <button type="button" className="grid h-11 w-11 place-items-center rounded-md text-ink-2 md:hidden" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls="mobile-navigation" aria-label={open ? "Close menu" : "Open menu"}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d={open ? "M6 6l12 12M18 6 6 18" : "M4 7h16M4 12h16M4 17h16"} />
             </svg>
@@ -39,9 +39,9 @@ export function Nav() {
         </div>
       </div>
       {open && (
-        <nav className="border-t border-line bg-paper px-4 py-3 md:hidden" aria-label="Mobile">
+        <nav id="mobile-navigation" className="border-t border-line bg-paper px-4 py-3 md:hidden" aria-label="Mobile">
           {[...LINKS, { href: "/login", label: "Sign in" }, { href: "/console", label: "Launch app →" }].map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-[15px] text-ink">
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="flex min-h-11 items-center text-[15px] text-ink">
               {l.label}
             </Link>
           ))}

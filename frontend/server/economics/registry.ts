@@ -25,6 +25,7 @@ export const PROVIDER_KEYS: Record<string, string> = {
   gemini: "GEMINI_API_KEY",
   deepseek: "DEEPSEEK_API_KEY",
   llama: "LLAMA_API_KEY",
+  nearai: "NEARAI_API_KEY",
 };
 
 export const PROVIDER_LABEL: Record<string, string> = {
@@ -32,6 +33,7 @@ export const PROVIDER_LABEL: Record<string, string> = {
   gemini: "Google Gemini",
   deepseek: "DeepSeek",
   llama: "Llama host",
+  nearai: "NEAR AI",
 };
 
 const usdToMicro = (n: number) => parseUsd(n.toFixed(6)) ?? 0n;

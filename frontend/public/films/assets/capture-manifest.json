@@ -1,0 +1,126 @@
+{
+  "capturedAt": "2026-11-14T18:40:51.088Z",
+  "base": "http://localhost:3002",
+  "receiptId": "rcpt_20261114_132223_abd8ab1f",
+  "claims": "Actual app UI; Stress Lab is an isolated simulation; receipt is a real finalized testnet commitment.",
+  "formats": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "segments": [
+        {
+          "name": "overview",
+          "start": 3.297,
+          "duration": 5,
+          "markerColor": [
+            240,
+            0,
+            240
+          ],
+          "wallStart": 1794681654396,
+          "actionSeconds": 0,
+          "videoStart": 3.4
+        },
+        {
+          "name": "stress",
+          "start": 15.605,
+          "duration": 6,
+          "markerColor": [
+            0,
+            240,
+            240
+          ],
+          "wallStart": 1794681666704,
+          "actionSeconds": 2.912,
+          "videoStart": 17.832
+        },
+        {
+          "name": "survival",
+          "start": 24.909,
+          "duration": 6,
+          "markerColor": [
+            240,
+            240,
+            0
+          ],
+          "wallStart": 1794681676008,
+          "actionSeconds": 5.332,
+          "videoStart": 30.171999999999997
+        },
+        {
+          "name": "receipt",
+          "start": 41.958,
+          "duration": 6,
+          "markerColor": [
+            240,
+            0,
+            0
+          ],
+          "wallStart": 1794681693057,
+          "actionSeconds": 0,
+          "videoStart": 42.6
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "width": 430,
+      "height": 550,
+      "segments": [
+        {
+          "name": "overview",
+          "start": 3.687,
+          "duration": 5,
+          "markerColor": [
+            240,
+            0,
+            240
+          ],
+          "wallStart": 1794681713261,
+          "actionSeconds": 0,
+          "videoStart": 3
+        },
+        {
+          "name": "stress",
+          "start": 12.983,
+          "duration": 6,
+          "markerColor": [
+            0,
+            240,
+            240
+          ],
+          "wallStart": 1794681722557,
+          "actionSeconds": 0.776,
+          "videoStart": 13.04
+        },
+        {
+          "name": "survival",
+          "start": 22.759,
+          "duration": 6,
+          "markerColor": [
+            240,
+            240,
+            0
+          ],
+          "wallStart": 1794681732333,
+          "actionSeconds": 0.869,
+          "videoStart": 23.36
+        },
+        {
+          "name": "receipt",
+          "start": 35.515,
+          "duration": 6,
+          "markerColor": [
+            240,
+            0,
+            0
+          ],
+          "wallStart": 1794681745089,
+          "actionSeconds": 0,
+          "videoStart": 36.16
+        }
+      ]
+    }
+  ]
+}

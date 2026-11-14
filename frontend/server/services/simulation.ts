@@ -20,7 +20,7 @@ const TICK_MS = 10_000; // virtual
 const WINDOW_MS = 5 * 60_000; // virtual rolling window
 const MAX_CATCHUP_MS = 30_000 * SPEED;
 
-type Bucket = { t: number; revenue: string; expense: string; requests: number; refused: number };
+type Bucket = { t: number; revenue: string; expense: string; overhead?: string; requests: number; refused: number };
 export type SimModifiers = {
   costMultiplier: number; // true provider cost vs price list
   demandMultiplier: number; // scales request volume
@@ -31,6 +31,7 @@ export type SimDecision = { at: number; kind: string; text: string; state: strin
 export type SimState = {
   virtualNow: number;
   lastRealAt: number;
+  carryVirtualMs?: number;
   treasury: string;
   liabilities: string;
   payables: string;
@@ -53,6 +54,7 @@ function initialState(): SimState {
   return {
     virtualNow: now,
     lastRealAt: now,
+    carryVirtualMs: 0,
     treasury: "60000000", // $60 simulated
     liabilities: "20000000",
     payables: "0",
@@ -82,7 +84,12 @@ function snapshotOf(s: SimState): EconomicSnapshot {
   for (const b of s.buckets) {
     if (b.t < since) continue;
     revenue += BigInt(b.revenue);
-    expense += BigInt(b.expense);
+    // Policy snapshots contain provider expense; deriveMetrics adds fixed
+    // overhead to burn separately, exactly as it does for the real economy.
+    const overhead = b.overhead === undefined
+      ? BigInt(s.overheadPerHour) * BigInt(TICK_MS) / 3_600_000n
+      : BigInt(b.overhead);
+    expense += BigInt(b.expense) - overhead;
     requests += b.requests;
   }
   const health: Record<string, ProviderHealth> = {};
@@ -163,7 +170,7 @@ function tick(s: SimState, cfg: PolicyConfig): TickOutcome {
   // business keeps the margin and pays overhead.
   const overhead = (BigInt(s.overheadPerHour) * BigInt(TICK_MS)) / 3_600_000n;
   s.treasury = (BigInt(s.treasury) + revenue - expense - overhead).toString();
-  s.buckets.push({ t: s.virtualNow, revenue: revenue.toString(), expense: (expense + overhead).toString(), requests: n - refused, refused });
+  s.buckets.push({ t: s.virtualNow, revenue: revenue.toString(), expense: (expense + overhead).toString(), overhead: overhead.toString(), requests: n - refused, refused });
   s.buckets = s.buckets.filter((b) => b.t >= s.virtualNow - WINDOW_MS);
   s.totals = {
     revenue: (BigInt(s.totals.revenue) + revenue).toString(),
@@ -207,9 +214,10 @@ function decision(s: SimState, kind: string, text: string) {
 
 async function advance(id: string, s: SimState, cfg: PolicyConfig, minTicks = 0) {
   const now = Date.now();
-  const virtualElapsed = Math.min((now - s.lastRealAt) * SPEED, MAX_CATCHUP_MS);
+  const virtualElapsed = Math.min(Math.max(0, now - s.lastRealAt) * SPEED + (s.carryVirtualMs ?? 0), MAX_CATCHUP_MS);
   s.lastRealAt = now;
   const ticks = Math.max(minTicks, Math.floor(virtualElapsed / TICK_MS));
+  s.carryVirtualMs = Math.max(0, virtualElapsed - ticks * TICK_MS);
   const scope = `sim:${id}`;
   for (let i = 0; i < ticks; i++) {
     const o = tick(s, cfg);
@@ -257,6 +265,7 @@ export type SimAction =
   | { type: "drain_treasury" }
   | { type: "restore_funding"; usd?: number }
   | { type: "provider_failure"; provider: string; down: boolean }
+  | { type: "advance_time"; seconds: number }
   | { type: "reset" };
 
 export async function applyAction(id: string, userId: string | null, action: SimAction) {
@@ -265,6 +274,7 @@ export async function applyAction(id: string, userId: string | null, action: Sim
   const s = l.state;
   const cfg = await activePolicy();
   await advance(id, s, cfg); // bring time current first
+  let actionTicks = 1;
   switch (action.type) {
     case "spike_cost":
       s.modifiers.costMultiplier = Math.min(10, Math.max(0.5, action.multiplier));
@@ -297,6 +307,10 @@ export async function applyAction(id: string, userId: string | null, action: Sim
         : s.modifiers.providersDown.filter((p) => p !== action.provider);
       decision(s, "stress", `${action.provider} marked ${action.down ? "down" : "healthy"} (simulated).`);
       break;
+    case "advance_time":
+      actionTicks = Math.ceil(Math.min(300, Math.max(10, action.seconds)) * 1000 / TICK_MS);
+      decision(s, "info", `Advancing ${actionTicks * TICK_MS / 1000} simulated seconds with the current conditions.`);
+      break;
     case "reset": {
       const fresh = initialState();
       for (let i = 0; i < 30; i++) tick(fresh, cfg);
@@ -307,7 +321,7 @@ export async function applyAction(id: string, userId: string | null, action: Sim
     }
   }
   // Apply one tick immediately so the effect is visible at once.
-  await advance(id, s, cfg, 1);
+  await advance(id, s, cfg, actionTicks);
   await save(id, s);
   return { id, ...(await simView(id, s, cfg)) };
 }
@@ -325,6 +339,8 @@ async function simView(id: string, s: SimState, cfg: PolicyConfig) {
   const snap = snapshotOf(s);
   const ev = evaluatePolicy(snap, s.memory, cfg, s.virtualNow);
   const active = s.lastModelId ? simModels().find((m) => m.id === s.lastModelId) : null;
+  const pending = ev.memory.pendingSince;
+  const holdMs = pending?.target === "ABUNDANCE" && ev.state === "RECOVERY" ? cfg.recovery.dwellMs : pending?.target === "RECOVERY" ? 0 : cfg.minDwellMs;
   const overview: OverviewDTO = {
     scope: `sim:${id}`,
     simulated: true,
@@ -364,6 +380,13 @@ async function simView(id: string, s: SimState, cfg: PolicyConfig) {
     decisions: s.decisions.slice(0, 30),
     totals: s.totals,
     speed: SPEED,
+    windowSeconds: WINDOW_MS / 1000,
+    policy: {
+      defensiveMarginBp: cfg.defensive.enterMarginBp,
+      abundanceMarginBp: cfg.abundance.minMarginBp,
+      pendingState: pending?.target ?? null,
+      remainingHoldSeconds: pending ? Math.ceil(Math.max(0, cfg.minDwellMs - (s.virtualNow - ev.memory.since), holdMs - (s.virtualNow - pending.at)) / 1000) : null,
+    },
     tierLabels: TIER_LABEL,
     models: simModels().map((m) => ({ id: m.id, label: m.label, tier: m.tier, provider: m.provider, configured: m.enabled })),
   };

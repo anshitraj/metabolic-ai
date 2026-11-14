@@ -18,6 +18,9 @@ This folder is the source of truth for the build. Read in order.
 | 08 | [Runbook](08-RUNBOOK.md) | Deploy, operate, and run the demo; what is real vs simulated |
 | 09 | [Spend Passes](09-SPEND-PASSES.md) | Agent credentials, enforced budgets, model restrictions, accounting and recovery |
 | 10 | [Deployment verification](10-DEPLOYMENT-VERIFICATION.md) | Observed testnet transactions, reproduction commands, production preparation and remaining limits |
+| 11 | [Railway and Supabase](11-RAILWAY-SUPABASE.md) | Prepared hosting configuration and server-only database access |
+| 12 | [Landing and mobile](12-LANDING-AND-MOBILE.md) | Interactive walkthroughs, responsive navigation, accessible controls and UI verification |
+| 13 | [Motion and social video](13-MOTION-AND-SOCIAL-VIDEO.md) | Bold word art, dashboard polish, Konva/Three.js motion and editable Remotion social exports |
 
 Visual reference: [design/design-board.html](design/design-board.html) — palette, type, organism states and the two main layouts, rendered.
 

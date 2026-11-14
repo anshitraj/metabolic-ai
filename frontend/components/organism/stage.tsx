@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useInView } from "motion/react";
 import type { OperatingState, OverviewDTO, Tier } from "@/lib/economics/types";
 import { useLive, STATE_META } from "@/lib/client/live";
 import { formatBp, formatCoverage } from "@/lib/economics/money";
@@ -42,6 +43,7 @@ export function OrganismStage({
   onSelect,
   label,
   previewState,
+  activityWindowLabel = "h",
 }: {
   overview: OverviewDTO | null;
   className?: string;
@@ -49,6 +51,7 @@ export function OrganismStage({
   onSelect?: (s: OrganismSelect) => void;
   label?: React.ReactNode;
   previewState?: OperatingState | null;
+  activityWindowLabel?: string;
 }) {
   const events = useLive((s) => s.events);
   const reduced = useLive((s) => s.reducedEffects);
@@ -56,6 +59,10 @@ export function OrganismStage({
   const connection = useLive((s) => s.connection);
   const [gl, setGl] = useState<boolean | null>(null);
   const [resetKey, setResetKey] = useState(0);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const nearViewport = useInView(stageRef, { once: true, margin: "200px" });
+  const [sceneReady, setSceneReady] = useState(false);
+  const onReady = useCallback(() => setSceneReady(true), []);
   useEffect(() => {
     // Detect once on mount (client-only capability).
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -68,9 +75,12 @@ export function OrganismStage({
   const dormant = !overview && !preview;
 
   return (
-    <div className={cx("m-stage rounded-[28px]", className)} aria-label={`Metabolic organism, ${STATE_META[state].label} state${preview ? " (preview)" : ""}`}>
+    <div ref={stageRef} className={cx("m-stage rounded-[28px]", className)} data-visual-ready={sceneReady} aria-label={`Metabolic organism, ${STATE_META[state].label} state${preview ? " (preview)" : ""}`}>
       <div className="absolute inset-0 z-0">
-        {gl && !dormant ? (
+        <div className={cx("m-stage-preview absolute inset-0 grid place-items-center p-6", dormant && "opacity-40", sceneReady && "m-stage-preview-ready")} aria-hidden={sceneReady}>
+          <div className="aspect-square w-full max-w-[460px]"><OrganismFallback state={state} /></div>
+        </div>
+        {gl && !dormant && nearViewport && (
           <Scene
             state={state}
             tier={preview ? PREVIEW[preview].tier : overview?.activeModel?.tier ?? null}
@@ -81,13 +91,8 @@ export function OrganismStage({
             reduced={reduced}
             onSelect={preview ? undefined : onSelect}
             resetKey={resetKey}
+            onReady={onReady}
           />
-        ) : (
-          <div className={cx("grid h-full w-full place-items-center p-6", dormant && "opacity-40")}>
-            <div className="aspect-square h-full max-h-[460px]">
-              <OrganismFallback state={state} />
-            </div>
-          </div>
         )}
       </div>
 
@@ -121,7 +126,7 @@ export function OrganismStage({
                 </span>
                 <span className="flex items-center gap-2">
                   {overview.activeModel && <span className="text-stage-ink/80">{overview.activeModel.label}</span>}
-                  <span>· {overview.requestsWindow} req/h</span>
+                  <span>· {overview.requestsWindow} req/{activityWindowLabel}</span>
                   {!overview.simulated && (
                     <span className={cx("flex items-center gap-1", connection === "live" ? "text-g-400" : "text-df")}>
                       <span className={cx("h-1.5 w-1.5 rounded-full", connection === "live" ? "m-live-dot bg-g-400" : "bg-df")} />

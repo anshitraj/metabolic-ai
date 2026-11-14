@@ -157,7 +157,7 @@ export default function WorkspacePage() {
   const lowCredit = quote?.estimate ? credits < big(quote.estimate.charge) : credits <= 0n;
 
   return (
-    <div className="grid h-[calc(100dvh-56px-48px)] min-h-[560px] gap-4 lg:grid-cols-[220px_1fr_260px]">
+    <div className="grid h-[calc(100svh-160px)] min-h-[480px] min-w-0 gap-4 lg:h-[calc(100dvh-56px-48px)] lg:min-h-[560px] lg:grid-cols-[220px_minmax(0,1fr)_260px]">
       {/* Conversations */}
       <Card className="hidden flex-col overflow-hidden lg:flex">
         <div className="border-b border-line p-3">
@@ -177,6 +177,10 @@ export default function WorkspacePage() {
 
       {/* Thread */}
       <Card className="flex min-h-0 flex-col overflow-hidden">
+        <div className="flex min-w-0 items-center gap-2 border-b border-line bg-paper/50 px-3 py-2 lg:hidden">
+          <label className="min-w-0 flex-1"><span className="sr-only">Conversation</span><select aria-label="Conversation" className="h-11 w-full min-w-0 truncate rounded-lg border border-line bg-surface px-2 text-[16px]" value={convId ?? ""} onChange={(e) => void open(e.target.value || null)}><option value="">New conversation</option>{(convs.data?.conversations ?? []).map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
+          <Button variant="secondary" size="sm" onClick={() => void open(null)}>+ New</Button>
+        </div>
         <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2.5 text-[12.5px]">
           {overview && <StateChip state={overview.state} />}
           <span className="text-muted">Auto routing · operator-funded AI providers</span>
@@ -201,7 +205,7 @@ export default function WorkspacePage() {
               <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
                 {m.notice && <Notice n={m.notice} />}
                 {m.role === "user" ? (
-                  <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-ink px-4 py-2.5 text-[14.5px] text-white">{m.content}</div>
+                  <div className="ml-auto max-w-[85%] break-words rounded-2xl rounded-br-md bg-ink px-4 py-2.5 text-[14.5px] text-white">{m.content}</div>
                 ) : m.content || m.pending ? (
                   <div className="max-w-[92%]">
                     <div className="text-[14.5px] leading-[1.7] text-ink">
@@ -240,7 +244,7 @@ export default function WorkspacePage() {
               rows={2}
               placeholder="Ask anything…"
               aria-label="Message"
-              className="max-h-40 min-h-[48px] flex-1 resize-none rounded-xl border border-line-strong bg-surface px-3.5 py-2.5 text-[14.5px] outline-none focus:border-g-500 focus:ring-2 focus:ring-g-500/20"
+              className="max-h-40 min-h-[48px] min-w-0 flex-1 resize-none rounded-xl border border-line-strong bg-surface px-3.5 py-2.5 text-[16px] outline-none focus:border-g-500 focus:ring-2 focus:ring-g-500/20 sm:text-[14.5px]"
             />
             {busy ? (
               <Button type="button" variant="secondary" onClick={() => abort.current?.abort()}>Stop</Button>
@@ -260,8 +264,9 @@ export default function WorkspacePage() {
                 "Estimating…"
               )}
             </span>
-            <span>Enter to send · Shift+Enter for a new line</span>
+            <span className="hidden sm:inline">Enter to send · Shift+Enter for a new line</span>
           </div>
+          <details className="mt-2 rounded-lg bg-paper px-3 text-[12px] lg:hidden"><summary className="cursor-pointer py-2 text-ink-2">Request details & session usage</summary><div className="space-y-2 pb-3 text-muted"><p>{quote?.explanation ?? "Model estimates appear as you type."}</p>{quote?.ok && quote.estimate && <p>AI cost: <span className="m-num text-ink">{formatUsd(big(quote.estimate.cost))}</span> (est.) · Margin: {formatBp(quote.estimate.marginBp)}</p>}<p>This session: {session.n} requests · {formatUsd(session.charge)} charged</p><Link href="/console/decisions" className="inline-flex min-h-9 items-center font-semibold text-g-700">See routing decisions ↗</Link></div></details>
         </div>
       </Card>
 

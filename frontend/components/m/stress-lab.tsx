@@ -9,6 +9,7 @@ import { OrganismStage } from "@/components/organism/stage";
 import { LineChart, SERIES } from "./charts";
 import { Badge, Button, Card, ErrorNote, Label, SimChip, Skeleton, StateChip, cx } from "./ui";
 import { Hint, StateGuide, STATE_GUIDANCE } from "./guide";
+import { ProviderMark } from "./provider-mark";
 
 export type SimView = {
   id: string;
@@ -19,6 +20,8 @@ export type SimView = {
   decisions: { at: number; kind: string; text: string; state: string; model: string | null }[];
   totals: { revenue: string; expense: string; requests: number; refused: number };
   speed: number;
+  windowSeconds: number;
+  policy: { defensiveMarginBp: number; abundanceMarginBp: number; pendingState: string | null; remainingHoldSeconds: number | null };
   models: { id: string; label: string; tier: string; provider: string; configured: boolean }[];
 };
 
@@ -29,11 +32,13 @@ export type SimAction =
   | { type: "drain_treasury" }
   | { type: "restore_funding"; usd?: number }
   | { type: "provider_failure"; provider: string; down: boolean }
+  | { type: "advance_time"; seconds: number }
   | { type: "reset" };
 
 /** A scenario owns its stream and polling lifecycle; old polls cannot overwrite an action. */
 export function useSimulation() {
   const [sim, setSim] = useState<SimView | null>(null);
+  const [baseline, setBaseline] = useState<OverviewDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pollError, setPollError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -61,6 +66,7 @@ export function useSimulation() {
         useLive.getState().setOverview(s.overview);
         useLive.getState().setConnection("live");
         setSim(s);
+        setBaseline(s.overview);
         es = new EventSource(`/api/events/stream?scope=sim:${s.id}`);
         es.addEventListener("metabolic", (m) => {
           const ev = JSON.parse((m as MessageEvent).data) as MetabolicEvent;
@@ -115,6 +121,7 @@ export function useSimulation() {
       const n = await api<SimView>(`/api/simulations/${id}/events`, { method: "POST", json: a });
       if (idRef.current !== id) return false;
       setSim(n);
+      if (a.type === "reset") setBaseline(n.overview);
       useLive.getState().setOverview(n.overview);
       if (a.type === "restore_funding") useLive.getState().pushEffect({ type: "treasury.deposit.confirmed", payload: {} });
       return true;
@@ -128,7 +135,7 @@ export function useSimulation() {
   }, []);
 
   const retry = () => { setError(null); setPollError(null); setSim(null); setRevision((v) => v + 1); };
-  return { sim, error: error ?? pollError, act, busy, retry };
+  return { sim, baseline, error: error ?? pollError, act, busy, retry };
 }
 
 const SCENARIOS: { title: string; description: string; action: SimAction; outcome: string }[] = [
@@ -139,7 +146,7 @@ const SCENARIOS: { title: string; description: string; action: SimAction; outcom
 ];
 
 export function StressLab({ realActions }: { realActions?: React.ReactNode }) {
-  const { sim, error, act, busy, retry } = useSimulation();
+  const { sim, baseline, error, act, busy, retry } = useSimulation();
   const overview = sim?.overview ?? null;
   const [notice, setNotice] = useState("Choose a scenario to see how the business responds. Combine changes or reset at any time.");
   const [resetCount, setResetCount] = useState(0);
@@ -150,6 +157,7 @@ export function StressLab({ realActions }: { realActions?: React.ReactNode }) {
     }
   };
   const disabled = !sim || busy;
+  const response = simulationResponse(sim, baseline);
   if (error && !sim) return <ErrorNote title="Could not start the simulation" message={error} onRetry={retry} />;
 
   return (
@@ -157,7 +165,7 @@ export function StressLab({ realActions }: { realActions?: React.ReactNode }) {
       <div className="m-sim-frame rounded-2xl p-4 sm:p-5">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-[12.5px]">
           <SimChip /><span className="text-ink-2">No real money or AI calls · {sim?.speed ?? 20}× speed</span>
-          <Button className="ml-auto" size="sm" variant="secondary" onClick={() => void run({ type: "reset" }, "Scenario reset. Costs, demand, traffic and funding are back to the starting conditions.")} disabled={disabled}>Reset everything</Button>
+          <div className="ml-auto flex flex-wrap gap-2"><Button size="sm" variant="secondary" disabled={disabled} onClick={() => void run({ type: "advance_time", seconds: 60 }, "One simulated minute elapsed with your current settings.")}>Advance 1 min →</Button><Button size="sm" variant="secondary" onClick={() => void run({ type: "reset" }, "Scenario reset. Costs, demand, traffic and funding are back to the starting conditions.")} disabled={disabled}>Reset everything</Button></div>
         </div>
         <div className="grid gap-5 xl:grid-cols-12">
           <div className="space-y-4 xl:col-span-4">
@@ -189,16 +197,18 @@ export function StressLab({ realActions }: { realActions?: React.ReactNode }) {
             </details>
           </div>
           <div className="min-w-0 space-y-4 xl:col-span-8">
-            <Card className="p-4 sm:p-5">
+            <Card className="p-4 sm:p-5" data-testid="simulation-response">
               <Label>2 · Understand the response</Label>
               {overview ? <>
                 <div className="mt-3 flex flex-wrap items-center gap-2"><StateChip state={overview.state} /><span className="text-[12px] text-muted">Current simulated state</span></div>
-                <h2 className="mt-2 text-[17px] font-semibold">{STATE_GUIDANCE[overview.state].title}</h2><p className="mt-1 text-[13px] leading-5 text-ink-2">{STATE_GUIDANCE[overview.state].description}</p>
+                <h2 className="mt-2 text-[17px] font-semibold">{response.title}</h2><p className="mt-1 text-[13px] leading-5 text-ink-2">{response.description}</p>
+                <div className="m-sim-route"><span className="m-label">Model choice</span><div>{baseline?.activeModel && baseline.activeModel.id !== overview.activeModel?.id && <><span className="m-sim-previous">{baseline.activeModel.label}</span><span aria-hidden>→</span></>}{overview.activeModel ? <><ProviderMark provider={overview.activeModel.provider} size={22} /><strong>{overview.activeModel.label}</strong><Badge>{overview.activeModel.tier}</Badge></> : <strong>No safe model available</strong>}</div><p>{overview.lastDecision?.explanation}</p></div>
+                {sim?.policy?.pendingState && <p className="mt-3 rounded-lg bg-paper px-3 py-2 text-[12px] text-ink-2">Stability check → {sim.policy.pendingState.toLowerCase()}. About {Math.ceil((sim.policy.remainingHoldSeconds ?? 0) / sim.speed)} real seconds remain if conditions hold. You can advance simulated time above.</p>}
                 <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 border-t border-line pt-3 font-mono text-[11.5px] text-muted"><span>Cost {sim?.modifiers.costMultiplier}×</span><span>Demand {Math.round((sim?.modifiers.demandMultiplier ?? 1) * 100)}%</span><span>Effective traffic {((sim?.modifiers.trafficPerMin ?? 30) * (sim?.modifiers.demandMultiplier ?? 1)).toFixed(0)}/min</span></div>
               </> : <Skeleton className="mt-3 h-28" />}
             </Card>
             {error && <ErrorNote title="Change or refresh failed" message={error} />}
-            <OrganismStage overview={overview} className="min-h-[280px] sm:min-h-[340px]" label={<SimChip />} />
+            <OrganismStage overview={overview} className="min-h-[280px] sm:min-h-[340px]" label={<SimChip />} activityWindowLabel="5 min" />
             {sim ? <SimMetrics sim={sim} /> : <Skeleton className="h-24" />}
           </div>
         </div>
@@ -232,6 +242,23 @@ function SimMetrics({ sim }: { sim: SimView }) {
     ["Blocked", String(sim.totals.refused), "Requests blocked because no available model fits the budget and policy."],
   ];
   return <Card className="grid grid-cols-2 gap-px overflow-hidden bg-line sm:grid-cols-4">{cells.map(([k, v, hint]) => <div key={k} className="bg-surface px-3 py-3" title={hint}><Label className="text-[10px]">{k}</Label><div className="mt-1 break-words font-mono text-[13px] text-ink">{v}</div></div>)}</Card>;
+}
+
+function simulationResponse(sim: SimView | null, baseline: OverviewDTO | null) {
+  if (!sim) return { title: "Starting the simulation", description: "Preparing the isolated economy." };
+  const o = sim.overview;
+  if (o.state === "SURVIVAL" && big(o.liquidity) > big(o.hardReserve)) return { title: "Stopping losses before they reach the reserve", description: "Recent compute costs exceed revenue. The policy has entered Survival even though funds remain. Reduce costs or restore profitable traffic, then allow the stability check to finish." };
+  if (o.state === "SURVIVAL" || o.state === "RECOVERY") return STATE_GUIDANCE[o.state];
+  if (!o.activeModel) return { title: "No model fits these conditions", description: "The router is refusing requests rather than accepting work outside its cost and margin limits. Lower costs or restore a provider." };
+  if (sim.modifiers.costMultiplier > 1) {
+    const switched = baseline?.activeModel?.id !== o.activeModel.id;
+    return {
+      title: switched ? `Higher costs → switched to ${o.activeModel.tier === "economy" ? "Economy" : o.activeModel.tier === "standard" ? "Standard" : "another model"}` : "Higher costs applied; learning the new price",
+      description: switched ? `The router now chooses ${o.activeModel.label}. ${o.state === "ABUNDANCE" ? `Abundance can stay green while a cheaper model protects the margin. Defensive begins below ${formatBp(sim.policy.defensiveMarginBp)} margin or when reserve coverage falls.` : STATE_GUIDANCE[o.state].description} The margin covers the latest five simulated minutes; use Advance 1 min to see it settle.` : "Provider costs have changed. Actual simulated requests teach the router the new cost before its next model choice. Watch Learned AI cost, or advance one simulated minute.",
+    };
+  }
+  if (sim.modifiers.demandMultiplier < 1) return { title: "Fewer customers; less revenue coming in", description: `Effective traffic is ${(sim.modifiers.trafficPerMin * sim.modifiers.demandMultiplier).toFixed(0)} requests per simulated minute. Fixed running costs continue. The state changes when the policy thresholds are crossed, so a demand drop can remain affordable.` };
+  return STATE_GUIDANCE[o.state];
 }
 
 function AdjustableControl({ title, desc, value, min, max, step, fmt, onApply }: { title: string; desc: string; value: number; min: number; max: number; step: number; fmt: (v: number) => string; onApply: (v: number) => Promise<void> }) {
