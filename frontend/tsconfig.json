@@ -49,7 +49,9 @@
     ".next-motion-release/types/**/*.ts",
     ".next-motion-release/dev/types/**/*.ts",
     ".next-stress-motion/types/**/*.ts",
-    ".next-stress-motion/dev/types/**/*.ts"
+    ".next-stress-motion/dev/types/**/*.ts",
+    ".next-stress-motion-final/types/**/*.ts",
+    ".next-stress-motion-final/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

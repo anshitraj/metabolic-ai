@@ -665,6 +665,8 @@ export default function OrganismScene(props: OrganismSceneProps) {
   return (
     <div ref={wrap} className="absolute inset-0">
       <Canvas
+        className="m-organism-canvas"
+        style={{ touchAction: "pan-y" }}
         dpr={low || props.reduced ? 1 : [1, 1.75]}
         frameloop={visible ? "always" : "never"}
         camera={{ position: [0, 0.35, 9.2], fov: 36 }}

@@ -21,6 +21,7 @@ This folder is the source of truth for the build. Read in order.
 | 11 | [Railway and Supabase](11-RAILWAY-SUPABASE.md) | Prepared hosting configuration and server-only database access |
 | 12 | [Landing and mobile](12-LANDING-AND-MOBILE.md) | Interactive walkthroughs, responsive navigation, accessible controls and UI verification |
 | 13 | [Motion and social video](13-MOTION-AND-SOCIAL-VIDEO.md) | Bold word art, dashboard polish, Konva/Three.js motion and editable Remotion social exports |
+| 14 | [Simulation and motion fixes](14-SIMULATION-AND-MOTION-FIXES.md) | Clock and overhead corrections, synchronized walkthrough prices, faster visual loading and native mobile gestures |
 
 Visual reference: [design/design-board.html](design/design-board.html) — palette, type, organism states and the two main layouts, rendered.
 

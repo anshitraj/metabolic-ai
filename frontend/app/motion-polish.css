@@ -54,6 +54,11 @@
 .ml-routing-reason { border-radius: 0 8px 8px 0; background: var(--m-paper); padding: 10px 12px; }
 .ml-routing-reason p { font-size: 11px; }
 .m-stage-preview { transition: opacity 350ms ease; }
+/* OrbitControls writes touch-action:none on its event container. Override that
+   container as well as the canvas so native vertical gestures can reach the page. */
+.m-organism-canvas, .m-organism-canvas canvas,
+.ml-flow-canvas div, .ml-flow-canvas canvas,
+.ml-film-player div:has(canvas), .ml-film-player canvas { touch-action: pan-y !important; }
 .m-stage-preview-ready { opacity: 0; pointer-events: none; }
 .m-stage-preview-ready * { animation-play-state: paused !important; }
 .m-sim-route { margin-top: 15px; padding: 12px; border: 1px solid var(--m-line); border-radius: 12px; background: var(--m-paper); }
