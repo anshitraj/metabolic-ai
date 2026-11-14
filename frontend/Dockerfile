@@ -47,5 +47,4 @@ COPY --from=build --chown=app:app /app/public ./public
 COPY --from=build --chown=app:app /app/server/db/migrations ./server/db/migrations
 USER app
 EXPOSE 3000
-VOLUME ["/app/.data"]
 CMD ["node", "server.js"]
