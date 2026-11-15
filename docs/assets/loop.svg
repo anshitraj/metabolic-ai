@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="1200" height="440" role="img" aria-labelledby="t d">
+  <title id="t">The metabolic loop</title>
+  <desc id="d">Six steps in a loop: pay, price, route, answer, bill, prove. A glowing dot travels around the loop and each step lights up in turn.</desc>
+  <defs>
+    <style>
+      .f{font-family:"Segoe UI",Inter,Helvetica,Arial,sans-serif}
+      .m{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+      .node rect{fill:#0e1a13;stroke:#24382c;stroke-width:1.5}
+      .node .hl{fill:none;stroke:#12b36e;stroke-width:2.5;opacity:0;animation:hl 12s infinite}
+      .n2 .hl{animation-delay:2s}.n3 .hl{animation-delay:4s}.n4 .hl{animation-delay:6s}.n5 .hl{animation-delay:8s}.n6 .hl{animation-delay:10s}
+      @keyframes hl{0%{opacity:0}4%,16%{opacity:1}22%,100%{opacity:0}}
+      .dash{stroke-dasharray:6 8;animation:flow 1.6s linear infinite}
+      @keyframes flow{to{stroke-dashoffset:-28}}
+      @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+    </style>
+  </defs>
+  <rect width="1200" height="440" rx="24" fill="#08110c"/>
+  <text x="40" y="52" class="f" font-size="24" font-weight="700" fill="#f1f7f2">How one request flows</text>
+  <text x="40" y="80" class="f" font-size="15" fill="#7d958a">Every answer is priced first, billed on real usage, and lands in books whose hash is committed to NEAR.</text>
+
+  <path id="loop" d="M245 170 H955 Q1080 170 1080 260 Q1080 350 955 350 H245 Q120 350 120 260 Q120 170 245 170 Z" fill="none" stroke="#1d3326" stroke-width="2"/>
+  <path d="M245 170 H955 Q1080 170 1080 260 Q1080 350 955 350 H245 Q120 350 120 260 Q120 170 245 170 Z" fill="none" stroke="#12b36e" stroke-opacity=".5" stroke-width="2" class="dash"/>
+  <circle r="20" fill="#12b36e" opacity=".25">
+    <animateMotion dur="12s" repeatCount="indefinite"><mpath href="#loop"/></animateMotion>
+  </circle>
+  <circle r="8" fill="#7cf0b4">
+    <animateMotion dur="12s" repeatCount="indefinite"><mpath href="#loop"/></animateMotion>
+  </circle>
+
+  <g class="node n1" transform="translate(120 120)"><rect width="250" height="100" rx="16"/><rect class="hl" width="250" height="100" rx="16"/>
+    <text x="20" y="34" class="m" font-size="13" fill="#7cf0b4">01 · PAY</text>
+    <text x="20" y="60" class="f" font-size="17" font-weight="600" fill="#f1f7f2">Prepay in NEAR</text>
+    <text x="20" y="82" class="f" font-size="13" fill="#7d958a">or any token via NEAR Intents</text></g>
+  <g class="node n2" transform="translate(475 120)"><rect width="250" height="100" rx="16"/><rect class="hl" width="250" height="100" rx="16"/>
+    <text x="20" y="34" class="m" font-size="13" fill="#7cf0b4">02 · PRICE</text>
+    <text x="20" y="60" class="f" font-size="17" font-weight="600" fill="#f1f7f2">Quote before it runs</text>
+    <text x="20" y="82" class="f" font-size="13" fill="#7d958a">credit reserved, never overdrawn</text></g>
+  <g class="node n3" transform="translate(830 120)"><rect width="250" height="100" rx="16"/><rect class="hl" width="250" height="100" rx="16"/>
+    <text x="20" y="34" class="m" font-size="13" fill="#7cf0b4">03 · ROUTE</text>
+    <text x="20" y="60" class="f" font-size="17" font-weight="600" fill="#f1f7f2">Pick what it can afford</text>
+    <text x="20" y="82" class="f" font-size="13" fill="#7d958a">deterministic policy, not an LLM</text></g>
+  <g class="node n4" transform="translate(830 300)"><rect width="250" height="100" rx="16"/><rect class="hl" width="250" height="100" rx="16"/>
+    <text x="20" y="34" class="m" font-size="13" fill="#7cf0b4">04 · ANSWER</text>
+    <text x="20" y="60" class="f" font-size="17" font-weight="600" fill="#f1f7f2">Call the model</text>
+    <text x="20" y="82" class="f" font-size="13" fill="#7d958a">NEAR AI Cloud, Gemini, Claude…</text></g>
+  <g class="node n5" transform="translate(475 300)"><rect width="250" height="100" rx="16"/><rect class="hl" width="250" height="100" rx="16"/>
+    <text x="20" y="34" class="m" font-size="13" fill="#7cf0b4">05 · BILL</text>
+    <text x="20" y="60" class="f" font-size="17" font-weight="600" fill="#f1f7f2">Charge real usage</text>
+    <text x="20" y="82" class="f" font-size="13" fill="#7d958a">double-entry ledger, micro-USD</text></g>
+  <g class="node n6" transform="translate(120 300)"><rect width="250" height="100" rx="16"/><rect class="hl" width="250" height="100" rx="16"/>
+    <text x="20" y="34" class="m" font-size="13" fill="#7cf0b4">06 · PROVE</text>
+    <text x="20" y="60" class="f" font-size="17" font-weight="600" fill="#f1f7f2">Hash the books on NEAR</text>
+    <text x="20" y="82" class="f" font-size="13" fill="#7d958a">anyone can verify at /verify</text></g>
+</svg>

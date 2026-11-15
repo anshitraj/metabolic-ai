@@ -5,6 +5,7 @@ import { config } from "@/server/config";
 import { getDb } from "@/server/db/client";
 import { enabledModels } from "@/server/economics/registry";
 import { rpc, viewAccessKey, viewAccount, viewFunction } from "@/server/near/rpc";
+import { intentsConfigured } from "./intents";
 
 export async function deploymentReadiness() {
   const checks: { name: string; ok: boolean; detail: string }[] = [];
@@ -31,6 +32,9 @@ export async function deploymentReadiness() {
       } else check("receipt-key-scope", false, "Set NEAR_RECEIPT_SIGNER_ID and NEAR_RECEIPT_SIGNER_KEY in runtime secrets.");
     } catch { check("contract", false, "Contract methods or signer permissions could not be verified. Check the contract and network configuration."); }
   } else check("contract", false, "NEAR_CONTRACT_ID is not set.");
+  // Optional: NEAR Intents payments are mainnet-only and off until a recipient is set.
+  const intents = intentsConfigured();
+  check("near-intents", true, intents.ok ? `Pay-with-any-token is on; USDC settles to ${config.intents.recipient} on mainnet${config.intents.apiKey ? "" : " (no 1Click JWT, so a 0.25% fee applies)"}.` : `Optional and off. ${intents.reason}`);
   if (config.isProd) {
     check("production-database", !!process.env.DATABASE_URL, "Use managed PostgreSQL for this production deployment.");
     check("public-origin", /^https:\/\//.test(config.publicUrl) && !/localhost|127\.0\.0\.1/.test(config.publicUrl), "PUBLIC_WEB_URL must be the public HTTPS origin.");

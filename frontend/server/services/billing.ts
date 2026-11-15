@@ -118,6 +118,23 @@ export async function creditDeposit(tx: Executor, userId: string, usd: bigint, d
   );
 }
 
+/** Credit a settled NEAR Intents payment (USD micro). The treasury asset is USDC on NEAR. */
+export async function creditIntentPayment(tx: Executor, userId: string, usd: bigint, paymentId: string) {
+  await ensureBalanceRow(tx, userId);
+  await tx
+    .update(creditBalances)
+    .set({ available: sql`${creditBalances.available} + ${usd}`, updatedAt: new Date() })
+    .where(eq(creditBalances.userId, userId));
+  await postJournal(
+    tx,
+    [
+      { account: "asset:treasury", debit: usd, memo: "NEAR Intents payment settled as USDC (credits)" },
+      { account: "liability:credits", credit: usd, userId },
+    ],
+    { type: "intent_payment", id: paymentId },
+  );
+}
+
 /** Record operator capital (funds the business, not a customer liability). */
 export async function recordCapital(tx: Executor, userId: string, usd: bigint, depositId: string) {
   await postJournal(

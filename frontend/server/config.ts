@@ -32,6 +32,23 @@ export const config = {
   receipts: {
     intervalMinutes: Number(env("RECEIPT_INTERVAL_MIN") ?? 10),
   },
+  /**
+   * NEAR Intents (1Click API): customers pay with any supported token on any
+   * chain; solvers settle it as USDC on NEAR into `recipient`. NEAR Intents has
+   * no testnet, so this is always mainnet and moves real funds. Disabled until
+   * INTENTS_RECIPIENT_ACCOUNT_ID is set.
+   */
+  intents: {
+    baseUrl: env("ONECLICK_BASE_URL") ?? "https://1click.chaindefuser.com",
+    /** Partner JWT from partners.near-intents.org. Optional: without it 1Click adds a 0.25% fee. */
+    apiKey: env("ONECLICK_JWT"),
+    recipient: env("INTENTS_RECIPIENT_ACCOUNT_ID"),
+    slippageBp: Number(env("INTENTS_SLIPPAGE_BP") ?? 100),
+    minUsdMicro: BigInt(env("INTENTS_MIN_USD_MICRO") ?? "1000000"),
+    maxUsdMicro: BigInt(env("INTENTS_MAX_USD_MICRO") ?? "500000000"),
+    /** Minutes before an unpaid quote refunds. */
+    deadlineMinutes: Number(env("INTENTS_DEADLINE_MIN") ?? 60),
+  },
   /** Fixed hourly overhead (hosting etc.) that counts toward burn, in micro-USD. */
   overheadPerHourMicro: BigInt(env("OVERHEAD_PER_HOUR_MICRO") ?? "0"),
 };

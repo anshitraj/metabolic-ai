@@ -107,6 +107,8 @@ export type RefusalCode = "FUNDING_REQUIRED" | "NO_CAPABLE_MODEL" | "ALL_PROVIDE
 export const EVENT_TYPES = [
   "treasury.deposit.pending",
   "treasury.deposit.confirmed",
+  "treasury.intent.created",
+  "treasury.intent.settled",
   "inference.started",
   "inference.completed",
   "inference.failed",

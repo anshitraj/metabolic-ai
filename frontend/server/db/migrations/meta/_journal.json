@@ -36,6 +36,13 @@
       "when": 1794673106584,
       "tag": "0004_server_only_table_access",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794701078722,
+      "tag": "0005_near_intents_payments",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,7 @@ import { probeAll } from "@/server/services/health";
 import { getRate } from "@/server/services/core";
 import { publishReceipt, receiptsConfigured, submitReceipt } from "@/server/services/receipts";
 import { recoverStaleReservations } from "@/server/services/spend-passes";
+import { refreshOpenIntentPayments } from "@/server/services/intents";
 
 // Background jobs. Runs in-process (instrumentation.ts) by default, because the
 // embedded PGlite database is single-process. With DATABASE_URL set you can run
@@ -32,6 +33,7 @@ export function startWorker(log: (m: string) => void = (m) => console.log(`[work
     { name: "provider-health", everyMs: 120_000, run: probeAll },
     { name: "receipts", everyMs: config.receipts.intervalMinutes * 60_000, run: () => autoReceipt(log) },
     { name: "receipt-retry", everyMs: 5 * 60_000, run: () => retryFailedReceipts(log) },
+    { name: "intent-payments", everyMs: 20_000, run: async () => { const n = await refreshOpenIntentPayments(); if (n) log(`Settled ${n} NEAR Intents payment(s).`); } },
   ].map((j) => ({ ...j, last: 0, running: false }));
 
   const tick = () => {

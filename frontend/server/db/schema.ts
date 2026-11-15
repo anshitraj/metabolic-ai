@@ -129,6 +129,37 @@ export const deposits = pgTable("deposits", {
   createdAt: createdAt(),
 }, (t) => [uniqueIndex("deposits_tx_uq").on(t.chainTxId), uniqueIndex("deposits_intent_uq").on(t.intentId)]).enableRLS();
 
+/**
+ * Pay-with-any-token via NEAR Intents (1Click API, mainnet). One row per quote:
+ * the customer sends `amountIn` of `originAsset` to `depositAddress`; solvers
+ * settle USDC on NEAR to `recipient`; on SUCCESS the user is credited once.
+ */
+export const intentPayments = pgTable("intent_payments", {
+  id: id(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  originAsset: text("origin_asset").notNull(),
+  originSymbol: text("origin_symbol").notNull(),
+  originChain: text("origin_chain").notNull(),
+  destinationAsset: text("destination_asset").notNull(),
+  recipient: text("recipient").notNull(),
+  amountIn: numeric("amount_in", { precision: 78, scale: 0 }).notNull(),
+  amountInFormatted: text("amount_in_formatted").notNull(),
+  refundTo: text("refund_to").notNull(),
+  depositAddress: text("deposit_address").notNull(),
+  depositMemo: text("deposit_memo"),
+  quotedUsdMicro: micro("quoted_usd_micro").notNull(),
+  /** The full signed 1Click quote response, kept to resolve disputes. */
+  quote: jsonb("quote").notNull(),
+  status: text("status").notNull().default("PENDING_DEPOSIT"),
+  depositTxHash: text("deposit_tx_hash"),
+  settledUsdMicro: micro("settled_usd_micro"),
+  creditedUsdMicro: micro("credited_usd_micro"),
+  creditedAt: timestamp("credited_at", { withTimezone: true }),
+  deadline: timestamp("deadline", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("intent_payments_deposit_uq").on(t.depositAddress), index("intent_payments_user_idx").on(t.userId), index("intent_payments_status_idx").on(t.status)]).enableRLS();
+
 /** Append-only double-entry ledger (a trigger rejects UPDATE/DELETE). */
 export const ledgerEntries = pgTable("ledger_entries", {
   id: id(),

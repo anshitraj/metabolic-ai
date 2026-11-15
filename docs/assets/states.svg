@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-labelledby="t d">
+  <title id="t">The four operating states</title>
+  <desc id="d">Abundance, Defensive, Survival and Recovery, connected in a cycle. Each state lights up in turn with what the business does in it.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3a5546"/></marker>
+    <style>
+      .f{font-family:"Segoe UI",Inter,Helvetica,Arial,sans-serif}
+      .m{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+      .box{opacity:.38;animation:on 16s infinite}
+      .b2{animation-delay:4s}.b3{animation-delay:8s}.b4{animation-delay:12s}
+      @keyframes on{0%{opacity:.38}3%,22%{opacity:1}26%,100%{opacity:.38}}
+      .pulse{transform-box:fill-box;transform-origin:center;animation:p 1.6s ease-in-out infinite}
+      @keyframes p{0%,100%{transform:scale(.8)}50%{transform:scale(1.25)}}
+      @media (prefers-reduced-motion:reduce){*{animation:none!important}.box{opacity:1}}
+    </style>
+  </defs>
+  <rect width="1200" height="300" rx="24" fill="#08110c"/>
+  <text x="40" y="50" class="f" font-size="24" font-weight="700" fill="#f1f7f2">It changes behaviour with its finances</text>
+  <text x="40" y="78" class="f" font-size="15" fill="#7d958a">Thresholds with hysteresis; every transition is logged with a written reason.</text>
+  <g stroke="#3a5546" stroke-width="2" fill="none" marker-end="url(#a)">
+    <line x1="292" y1="170" x2="318" y2="170"/>
+    <line x1="582" y1="170" x2="608" y2="170"/>
+    <line x1="872" y1="170" x2="898" y2="170"/>
+    <path d="M1030 232 V268 H165 V236"/>
+  </g>
+  <g class="box b1" transform="translate(40 110)"><rect width="250" height="120" rx="16" fill="#0c2117" stroke="#12b36e" stroke-width="2"/>
+    <circle class="pulse" cx="28" cy="32" r="7" fill="#12b36e"/><text x="46" y="38" class="m" font-size="15" font-weight="700" fill="#7cf0b4">ABUNDANCE</text>
+    <text x="22" y="72" class="f" font-size="15" fill="#e7f2ea">Healthy margin and runway.</text><text x="22" y="96" class="f" font-size="15" fill="#a9c2b2">Best models allowed.</text></g>
+  <g class="box b2" transform="translate(320 110)"><rect width="260" height="120" rx="16" fill="#231b0b" stroke="#f2a93b" stroke-width="2"/>
+    <circle class="pulse" cx="28" cy="32" r="7" fill="#f2a93b"/><text x="46" y="38" class="m" font-size="15" font-weight="700" fill="#f6c97c">DEFENSIVE</text>
+    <text x="22" y="72" class="f" font-size="15" fill="#f5ecdc">Costs rose or margin fell.</text><text x="22" y="96" class="f" font-size="15" fill="#d4c2a0">Downgrade to cheaper models.</text></g>
+  <g class="box b3" transform="translate(610 110)"><rect width="260" height="120" rx="16" fill="#26100f" stroke="#e5534b" stroke-width="2"/>
+    <circle class="pulse" cx="28" cy="32" r="7" fill="#e5534b"/><text x="46" y="38" class="m" font-size="15" font-weight="700" fill="#f19a94">SURVIVAL</text>
+    <text x="22" y="72" class="f" font-size="15" fill="#f6e3e1">Reserve at risk.</text><text x="22" y="96" class="f" font-size="15" fill="#d6aaa6">Cheapest tier, protect reserve.</text></g>
+  <g class="box b4" transform="translate(900 110)"><rect width="260" height="120" rx="16" fill="#0f1531" stroke="#6c8cff" stroke-width="2"/>
+    <circle class="pulse" cx="28" cy="32" r="7" fill="#6c8cff"/><text x="46" y="38" class="m" font-size="15" font-weight="700" fill="#a9baff">RECOVERY</text>
+    <text x="22" y="72" class="f" font-size="15" fill="#e3e8ff">Funding arrived.</text><text x="22" y="96" class="f" font-size="15" fill="#aab4dc">Step back up, carefully.</text></g>
+</svg>

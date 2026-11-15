@@ -11,6 +11,7 @@ import { Hint } from "@/components/m/guide";
 import { ClaimForm, useSetup } from "@/components/m/journey";
 import { Badge, Button, Card, Dialog, Empty, Field, Hash, Label, Money, Near, PageHeader, RealChip, Skeleton, TimeAgo, cx, inputClass } from "@/components/m/ui";
 import type { DepositIntent } from "@/lib/client/near";
+import { IntentsPay } from "@/components/m/intents-pay";
 
 type TreasuryDTO = {
   network: string;
@@ -183,6 +184,8 @@ export default function TreasuryPage() {
           </p>
         </Card>
       </div>
+
+      <IntentsPay signedIn={!!me?.user} onCredited={() => void refresh()} />
 
       {me?.user && (
         <DepositDialog

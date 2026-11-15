@@ -22,12 +22,16 @@ This folder is the source of truth for the build. Read in order.
 | 12 | [Landing and mobile](12-LANDING-AND-MOBILE.md) | Interactive walkthroughs, responsive navigation, accessible controls and UI verification |
 | 13 | [Motion and social video](13-MOTION-AND-SOCIAL-VIDEO.md) | Bold word art, dashboard polish, Konva/Three.js motion and editable Remotion social exports |
 | 14 | [Simulation and motion fixes](14-SIMULATION-AND-MOTION-FIXES.md) | Clock and overhead corrections, synchronized walkthrough prices, faster visual loading and native mobile gestures |
+| 15 | [Vercel frontend](15-VERCEL-FRONTEND.md) | UI on Vercel, `/api/*` proxied to the Railway backend, same-origin cookies and CSRF |
+| 16 | [NEAR Intents](16-NEAR-INTENTS.md) | Pay with any token on any chain, settled as USDC on NEAR; exactly-once credit rules (built after the deadline) |
+
+Animated diagrams used by the main README live in [assets/](assets/): `hero.svg`, `loop.svg` (one request, step by step) and `states.svg` (the four operating states). They are plain SVG with CSS animation and respect `prefers-reduced-motion`.
 
 Visual reference: [design/design-board.html](design/design-board.html) — palette, type, organism states and the two main layouts, rendered.
 
 ## One-paragraph pitch
 
-Every AI product has a cost per request and a price per request. Usually a human watches the gap. Metabolic AI watches it itself. Customers prepay in NEAR; each request is priced before it runs; a deterministic policy engine picks the best model the business can afford right now; actual token usage is billed after; and every state change is logged, explained, and periodically committed to NEAR as a verifiable receipt. When costs spike it downgrades. When the treasury runs dry it protects itself. When funding returns it recovers. A 3D organism on the dashboard is the live picture of that metabolism.
+Every AI product has a cost per request and a price per request. Usually a human watches the gap. Metabolic AI watches it itself. Customers prepay in NEAR (or, since doc 16, any token through NEAR Intents); each request is priced before it runs; a deterministic policy engine picks the best model the business can afford right now; actual token usage is billed after; and every state change is logged, explained, and periodically committed to NEAR as a verifiable receipt. When costs spike it downgrades. When the treasury runs dry it protects itself. When funding returns it recovers. A 3D organism on the dashboard is the live picture of that metabolism.
 
 ## Ground rules (apply to every document)
 
